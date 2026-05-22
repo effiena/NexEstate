@@ -15,7 +15,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 db_path = os.path.abspath(os.path.join(BASE_DIR, '../database/nexestate.db'))
 
 # JWT Secret Key (IMPORTANT)
-app.config["JWT_SECRET_KEY"] = "nexestate-super-secret-key"
+app.config["JWT_SECRET_KEY"] = "nexestate_super_secure_2026_realestate_key_12345"
 
 jwt = JWTManager(app)
 
@@ -38,11 +38,7 @@ class User(db.Model):
 class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey('user.id'),
-        nullable=False
-    )
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     title = db.Column(db.String(200), nullable=False)
     property_type = db.Column(db.String(100))
@@ -62,12 +58,14 @@ class Listing(db.Model):
     owner_name = db.Column(db.String(100))
     owner_contact = db.Column(db.String(50))
 
+    # ✅ ADD THIS
+    agent_name = db.Column(db.String(100))
+    agent_phone = db.Column(db.String(50))
+    agent_email = db.Column(db.String(120))
+
     status = db.Column(db.String(50), default='active')
 
-    created_at = db.Column(
-        db.DateTime,
-        server_default=db.func.now()
-    )
+    created_at = db.Column(db.DateTime, server_default=db.func.now())
 
 
 # Home Route
@@ -201,7 +199,12 @@ def my_listings():
             "title": l.title,
             "price": l.price,
             "state": l.state,
-            "status": l.status
+            "status": l.status,
+            "agent_name": l.agent_name,
+            "agent_phone": l.agent_phone,
+            "agent_email": l.agent_email
+
+
         })
 
     return jsonify(output)
@@ -295,4 +298,5 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
 
-    app.run(debug=True)
+    
+    app.run(host="0.0.0.0", port=5000, debug=True)
