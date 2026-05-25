@@ -1,97 +1,135 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
-class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<SearchScreen> createState() => _SearchScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
-  Map<String, dynamic>? user;
-  bool loading = true;
-  String? error;
+class _SearchScreenState extends State<SearchScreen> {
+  List results = [];
+  bool loading = false;
 
-  Future<void> loadProfile() async {
+  final stateController = TextEditingController();
+  final minPriceController = TextEditingController();
+  final maxPriceController = TextEditingController();
+
+  Future<void> searchListings() async {
+    setState(() {
+      loading = true;
+      results = [];
+    });
+
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final token = prefs.getString("token");
-
-      if (token == null) {
-        setState(() {
-          error = "No token found. Please login again.";
-          loading = false;
-        });
-        return;
-      }
-
-      final res = await http.get(
-        Uri.parse("http://192.168.0.123:5000/profile"),
-        headers: {
-          "Authorization": "Bearer $token",
-        },
+      final uri = Uri.parse(
+        "http://192.168.0.123:5000/search"
+        "?state=${stateController.text}"
+        "&min_price=${minPriceController.text}"
+        "&max_price=${maxPriceController.text}",
       );
+
+      final res = await http.get(uri);
 
       if (res.statusCode == 200) {
         setState(() {
-          user = jsonDecode(res.body);
+          results = jsonDecode(res.body);
           loading = false;
         });
       } else {
         setState(() {
-          error = "Failed to load profile (${res.statusCode})";
           loading = false;
         });
       }
     } catch (e) {
       setState(() {
-        error = "Error: $e";
         loading = false;
       });
     }
   }
 
   @override
-  void initState() {
-    super.initState();
-    loadProfile();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Agent Profile")),
+      appBar: AppBar(title: const Text("Search Listings")),
 
-      body: loading
-          ? const Center(child: CircularProgressIndicator())
+      body: Padding(
+        padding: const EdgeInsets.all(16),
 
-          : error != null
-              ? Center(
-                  child: Text(
-                    error!,
-                    style: const TextStyle(color: Colors.red),
+        child: Column(
+          children: [
+
+            // STATE
+            TextField(
+              controller: stateController,
+              decoration: const InputDecoration(
+                labelText: "State (e.g. Johor)",
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // MIN PRICE
+            TextField(
+              controller: minPriceController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "Min Price",
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // MAX PRICE
+            TextField(
+              controller: maxPriceController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(
+                labelText: "Max Price",
+              ),
+            ),
+
+            const SizedBox(height: 10),
+
+            // SEARCH BUTTON
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: searchListings,
+                child: const Text("Search"),
+              ),
+            ),
+
+            const SizedBox(height: 20),
+
+            // RESULTS
+            loading
+                ? const CircularProgressIndicator()
+                : Expanded(
+                    child: results.isEmpty
+                        ? const Text("No results found")
+                        : ListView.builder(
+                            itemCount: results.length,
+                            itemBuilder: (context, index) {
+                              final item = results[index];
+
+                              return Card(
+                                child: ListTile(
+                                  title: Text(item['title'] ?? "No title"),
+                                  subtitle: Text(item['state'] ?? "No state"),
+                                  trailing: Text(
+                                    "RM ${item['price'] ?? 0}",
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
                   ),
-                )
-
-              : Padding(
-                  padding: const EdgeInsets.all(16),
-
-                  child: Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-
-                    child: ListTile(
-                      leading: const Icon(Icons.person, size: 40),
-                      title: Text(user?['name'] ?? "No name"),
-                      subtitle: Text(user?['email'] ?? "No email"),
-                    ),
-                  ),
-                ),
+          ],
+        ),
+      ),
     );
   }
 }
