@@ -9,6 +9,7 @@ from flask_jwt_extended import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
+from flask import send_from_directory
 import os
 
 # =========================================================
@@ -21,7 +22,9 @@ CORS(app)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 DB_PATH = os.path.abspath(os.path.join(BASE_DIR, '../database/nexestate.db'))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+UPLOAD_FOLDER = os.path.abspath(
+    os.path.join(BASE_DIR, '../mobile/YooriODLegacy/uploads')
+)
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -260,6 +263,34 @@ def delete_listing(id):
 
     return jsonify({"message": "Listing deleted successfully"})
 
+# ==============
+# LISTING IMAGES
+# ==============
+@app.route('/listing-images/<folder>', methods=['GET'])
+def listing_images(folder):
+    base_path = os.path.join(BASE_DIR, '../mobile/YooriODLegacy/uploads', folder)
+
+    if not os.path.exists(base_path):
+        return jsonify([])
+
+    files = os.listdir(base_path)
+
+    images = [
+        f"http://127.0.0.1:5000/uploads/{folder}/{file}"
+        for file in files
+        if file.lower().endswith(('.jpg', '.jpeg', '.png', '.webp'))
+    ]
+
+    return jsonify(images)
+
+@app.route('/uploads/<folder>/<filename>')
+def serve_upload(folder, filename):
+
+    folder_path = os.path.join(UPLOAD_FOLDER, folder)
+
+    print("Serving from:", folder_path)  # DEBUG
+
+    return send_from_directory(folder_path, filename)
 # =========================================================
 # RUN
 # =========================================================
