@@ -4,15 +4,43 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-zinc-100 via-yellow-50 to-zinc-200">
 
-      {/* HEADER */}
-      <header className="text-center py-10">
-        <h1 className="text-4xl font-bold text-yellow-700">
-          Yoori OD Legacy Property
-        </h1>
+      {/* HEADER - PREMIUM LUXURY STYLE */}
+      <header className="text-center py-14 bg-black text-white relative overflow-hidden">
 
-        <p className="text-gray-600 mt-2">
-          Buy • Sell • Rent Properties in Johor
-        </p>
+        {/* subtle gold glow background */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black via-zinc-900 to-black opacity-90" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(234,179,8,0.12),transparent_60%)]" />
+
+        {/* content */}
+        <div className="relative z-10">
+
+          <p className="text-yellow-400 tracking-[0.3em] text-xs uppercase mb-4">
+            Trusted Property Consultant
+          </p>
+          
+          <h1 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-wide">
+            <span className="text-white drop-shadow-[0_2px_10px_rgba(255,255,255,0.25)]">
+               Yoori |
+            </span>{" "}
+            
+            <span className="text-yellow-400 
+            drop-shadow-[0_0_15px_rgba(234,179,8,0.8)] 
+            drop-shadow-[0_0_35px_rgba(234,179,8,0.4)]
+            ">
+            OD Legacy Property
+            </span>
+          </h1>
+
+          <p className="text-gray-300 mt-6 text-lg">
+            Buy • Sell • Rent Properties in Johor
+          </p>
+
+          {/* elegant divider */}
+          <div className="mt-8 flex justify-center">
+            <div className="w-40 h-[1px] bg-gradient-to-r from-transparent via-yellow-400 to-transparent"></div>
+          </div>
+
+        </div>
       </header>
 
       {/* LISTINGS */}
