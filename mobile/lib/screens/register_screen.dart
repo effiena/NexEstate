@@ -1,27 +1,25 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-import '../services/api_service.dart';
-import '../services/auth_service.dart';
-
-import 'home_screen.dart';
-import 'register_screen.dart';
-
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
 
+  final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
   bool loading = false;
   String error = "";
 
-  Future<void> login() async {
+  Future<void> register() async {
 
     setState(() {
       loading = true;
@@ -30,29 +28,39 @@ class _LoginScreenState extends State<LoginScreen> {
 
     try {
 
-      final token = await ApiService.login(
-        emailController.text,
-        passwordController.text,
+      final response = await http.post(
+        Uri.parse("http://127.0.0.1:5000/register"),
+
+        headers: {
+          "Content-Type": "application/json",
+        },
+
+        body: jsonEncode({
+          "name": nameController.text,
+          "email": emailController.text,
+          "password": passwordController.text,
+        }),
       );
 
-      if (token != null) {
+      final data = jsonDecode(response.body);
 
-        await AuthService.saveToken(token);
+      if (response.statusCode == 200) {
 
         if (mounted) {
 
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (_) => const HomeScreen(),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(data["message"]),
             ),
           );
+
+          Navigator.pop(context);
         }
 
       } else {
 
         setState(() {
-          error = "Invalid email or password";
+          error = "Registration failed";
         });
       }
 
@@ -75,7 +83,7 @@ class _LoginScreenState extends State<LoginScreen> {
     return Scaffold(
 
       appBar: AppBar(
-        title: const Text("NexEstate Login"),
+        title: const Text("Register"),
       ),
 
       body: Center(
@@ -96,16 +104,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
               children: [
 
-                const Icon(
-                  Icons.home_work,
-                  size: 80,
-                  color: Colors.blue,
-                ),
-
-                const SizedBox(height: 20),
-
                 const Text(
-                  "Welcome to NexEstate",
+                  "Create NexEstate Account",
+
                   textAlign: TextAlign.center,
 
                   style: TextStyle(
@@ -115,6 +116,17 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 const SizedBox(height: 30),
+
+                TextField(
+                  controller: nameController,
+
+                  decoration: const InputDecoration(
+                    labelText: "Name",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+
+                const SizedBox(height: 16),
 
                 TextField(
                   controller: emailController,
@@ -145,7 +157,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       )
 
                     : ElevatedButton(
-                        onPressed: login,
+                        onPressed: register,
 
                         style: ElevatedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(
@@ -153,26 +165,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
 
-                        child: const Text("Login"),
+                        child: const Text("Register"),
                       ),
-
-                const SizedBox(height: 12),
-
-                OutlinedButton(
-
-                  onPressed: () {
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            const RegisterScreen(),
-                      ),
-                    );
-                  },
-
-                  child: const Text("Create Account"),
-                ),
 
                 const SizedBox(height: 12),
 

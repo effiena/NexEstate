@@ -4,6 +4,7 @@ import 'screens/login_screen.dart';
 import 'screens/home_screen.dart';
 import 'screens/search_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/register_screen.dart';
 
 void main() {
   runApp(const NexEstateApp());
@@ -24,6 +25,7 @@ class NexEstateApp extends StatelessWidget {
         '/home': (context) => const HomeScreen(),
         '/search': (context) => const SearchScreen(),
         '/profile': (context) => const ProfileScreen(),
+        '/register': (context) => const RegisterScreen(),
       },
     );
   }
