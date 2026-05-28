@@ -9,11 +9,10 @@ from flask_jwt_extended import (
 )
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from flask import send_from_directory
 import os
 
 # =========================================================
-# APP CONFIG
+# APP INIT
 # =========================================================
 
 app = Flask(__name__)
@@ -21,17 +20,37 @@ CORS(app)
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-DB_PATH = os.path.abspath(os.path.join(BASE_DIR, '../database/nexestate.db'))
-UPLOAD_FOLDER = os.path.abspath(
-    os.path.join(BASE_DIR, '../mobile/YooriODLegacy/uploads')
+# =========================================================
+# CONFIG (PRODUCTION SAFE)
+# =========================================================
+
+# Use PostgreSQL if available (Railway recommended)
+DATABASE_URL = os.environ.get("DATABASE_URL")
+
+if DATABASE_URL:
+    app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
+else:
+    # fallback to local SQLite
+    DB_PATH = os.path.join(BASE_DIR, "nexestate.db")
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + DB_PATH
+
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+
+# JWT
+app.config["JWT_SECRET_KEY"] = os.environ.get(
+    "JWT_SECRET_KEY",
+    "nexestate_default_secret_change_me"
 )
 
+# Uploads (Railway-safe)
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + DB_PATH
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = "nexestate_super_secure_2026_realestate_key_12345"
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+
+# =========================================================
+# INIT EXTENSIONS
+# =========================================================
 
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
@@ -51,12 +70,12 @@ class User(db.Model):
     ren_tag = db.Column(db.String(50))
     agency = db.Column(db.String(100))
 
-    listings = db.relationship('Listing', backref='user', lazy=True)
+    listings = db.relationship("Listing", backref="user", lazy=True)
 
 
 class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
     title = db.Column(db.String(200), nullable=False)
     property_type = db.Column(db.String(100))
@@ -75,42 +94,38 @@ class Listing(db.Model):
     agent_phone = db.Column(db.String(50))
     agent_email = db.Column(db.String(120))
 
-    # ⭐ NEW: store image filenames (comma-separated)
-    images = db.Column(db.Text)
+    images = db.Column(db.Text)  # comma-separated filenames
 
     status = db.Column(db.String(50), default="active")
 
-# =========================================================
-# SERVE IMAGES
-# =========================================================
-
-@app.route('/uploads/<filename>')
-def uploaded_file(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 # =========================================================
-# HOME
+# ROUTES
 # =========================================================
 
-@app.route('/')
+@app.route("/")
 def home():
-    return jsonify({"app": "NexEstate PRO", "status": "running"})
+    return jsonify({
+        "app": "NexEstate PRO",
+        "status": "running"
+    })
+
 
 # =========================================================
-# REGISTER
+# AUTH
 # =========================================================
 
-@app.route('/register', methods=['POST'])
+@app.route("/register", methods=["POST"])
 def register():
     data = request.json
 
-    if User.query.filter_by(email=data['email']).first():
+    if User.query.filter_by(email=data["email"]).first():
         return jsonify({"message": "Email already registered"}), 400
 
     user = User(
-        name=data['name'],
-        email=data['email'],
-        password=generate_password_hash(data['password'])
+        name=data["name"],
+        email=data["email"],
+        password=generate_password_hash(data["password"])
     )
 
     db.session.add(user)
@@ -118,20 +133,17 @@ def register():
 
     return jsonify({"message": "User registered successfully"})
 
-# =========================================================
-# LOGIN
-# =========================================================
 
-@app.route('/login', methods=['POST'])
+@app.route("/login", methods=["POST"])
 def login():
     data = request.json
 
-    user = User.query.filter_by(email=data['email']).first()
+    user = User.query.filter_by(email=data["email"]).first()
 
     if not user:
         return jsonify({"message": "User not found"}), 404
 
-    if not check_password_hash(user.password, data['password']):
+    if not check_password_hash(user.password, data["password"]):
         return jsonify({"message": "Invalid password"}), 401
 
     token = create_access_token(identity=str(user.id))
@@ -141,24 +153,32 @@ def login():
         "token": token
     })
 
+
 # =========================================================
-# CREATE LISTING + IMAGE UPLOAD
+# UPLOAD SERVING
 # =========================================================
 
-@app.route('/listings', methods=['POST'])
+@app.route("/uploads/<filename>")
+def uploaded_file(filename):
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+
+
+# =========================================================
+# CREATE LISTING
+# =========================================================
+
+@app.route("/listings", methods=["POST"])
 @jwt_required()
 def create_listing():
     user_id = int(get_jwt_identity())
 
-    # TEXT FIELDS
-    title = request.form.get('title')
-    property_type = request.form.get('property_type')
-    address = request.form.get('address')
-    state = request.form.get('state')
-    selling_price = request.form.get('selling_price')
-    description = request.form.get('description')
+    title = request.form.get("title")
+    property_type = request.form.get("property_type")
+    address = request.form.get("address")
+    state = request.form.get("state")
+    selling_price = request.form.get("selling_price")
+    description = request.form.get("description")
 
-    # FILES
     files = request.files.getlist("images")
 
     image_names = []
@@ -166,8 +186,7 @@ def create_listing():
     for file in files:
         if file:
             filename = secure_filename(file.filename)
-            save_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(save_path)
+            file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
             image_names.append(filename)
 
     listing = Listing(
@@ -190,19 +209,20 @@ def create_listing():
         "images": image_names
     })
 
+
 # =========================================================
-# GET ALL LISTINGS (WITH IMAGE URLS)
+# SEARCH LISTINGS
 # =========================================================
 
-@app.route('/search', methods=['GET'])
+@app.route("/search", methods=["GET"])
 def search():
     listings = Listing.query.all()
 
     output = []
 
     for l in listings:
-
         image_list = []
+
         if l.images:
             for img in l.images.split(","):
                 image_list.append(f"/uploads/{img}")
@@ -219,11 +239,12 @@ def search():
 
     return jsonify(output)
 
+
 # =========================================================
 # UPDATE LISTING
 # =========================================================
 
-@app.route('/listings/<int:id>', methods=['PUT'])
+@app.route("/listings/<int:id>", methods=["PUT"])
 @jwt_required()
 def update_listing(id):
     user_id = int(get_jwt_identity())
@@ -235,20 +256,21 @@ def update_listing(id):
 
     data = request.json
 
-    listing.title = data.get('title', listing.title)
-    listing.selling_price = data.get('selling_price', listing.selling_price)
-    listing.address = data.get('address', listing.address)
-    listing.state = data.get('state', listing.state)
+    listing.title = data.get("title", listing.title)
+    listing.selling_price = data.get("selling_price", listing.selling_price)
+    listing.address = data.get("address", listing.address)
+    listing.state = data.get("state", listing.state)
 
     db.session.commit()
 
-    return jsonify({"message": "Listing updated successfully"})
+    return jsonify({"message": "Listing updated"})
+
 
 # =========================================================
 # DELETE LISTING
 # =========================================================
 
-@app.route('/listings/<int:id>', methods=['DELETE'])
+@app.route("/listings/<int:id>", methods=["DELETE"])
 @jwt_required()
 def delete_listing(id):
     user_id = int(get_jwt_identity())
@@ -261,42 +283,17 @@ def delete_listing(id):
     db.session.delete(listing)
     db.session.commit()
 
-    return jsonify({"message": "Listing deleted successfully"})
+    return jsonify({"message": "Listing deleted"})
 
-# ==============
-# LISTING IMAGES
-# ==============
-@app.route('/listing-images/<folder>', methods=['GET'])
-def listing_images(folder):
-    base_path = os.path.join(BASE_DIR, '../mobile/YooriODLegacy/uploads', folder)
 
-    if not os.path.exists(base_path):
-        return jsonify([])
-
-    files = os.listdir(base_path)
-
-    images = [
-        f"http://127.0.0.1:5000/uploads/{folder}/{file}"
-        for file in files
-        if file.lower().endswith(('.jpg', '.jpeg', '.png', '.webp'))
-    ]
-
-    return jsonify(images)
-
-@app.route('/uploads/<folder>/<filename>')
-def serve_upload(folder, filename):
-
-    folder_path = os.path.join(UPLOAD_FOLDER, folder)
-
-    print("Serving from:", folder_path)  # DEBUG
-
-    return send_from_directory(folder_path, filename)
 # =========================================================
-# RUN
+# RAILWAY ENTRY POINT
 # =========================================================
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     with app.app_context():
         db.create_all()
 
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    port = int(os.environ.get("PORT", 5000))
+
+    app.run(host="0.0.0.0", port=port)
