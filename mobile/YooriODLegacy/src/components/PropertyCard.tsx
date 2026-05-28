@@ -80,13 +80,26 @@ export default function PropertyCard({
 
   return (
     <>
-      {/* ================= CARD ================= */}
+      {/* ================= CARD (FIXED STRETCH) ================= */}
       <div
         onClick={() => setOpen(true)}
-        className="cursor-pointer bg-white border border-yellow-200 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all"
+        className="
+          cursor-pointer
+          bg-white
+          border border-yellow-200
+          rounded-3xl
+          overflow-hidden
+          shadow-lg
+          hover:shadow-2xl
+          transition-all
+          w-full
+          max-w-sm
+          mx-auto
+          flex flex-col
+        "
       >
-        {/* IMAGE */}
-        <div className="h-56 relative bg-gray-100 overflow-hidden">
+        {/* IMAGE (FIXED HEIGHT) */}
+        <div className="relative w-full h-56 bg-gray-100 overflow-hidden flex-shrink-0">
           {images.length > 0 ? (
             <img
               src={images[current]}
@@ -106,10 +119,11 @@ export default function PropertyCard({
         </div>
 
         {/* TEXT */}
-        <div className="p-6">
-          <h3 className="text-xl font-bold">{title}</h3>
-          <p className="text-gray-600">{location}</p>
-          <p className="mt-3 text-yellow-600 font-semibold">
+        <div className="p-6 flex flex-col gap-1">
+          <h3 className="text-xl font-bold leading-snug">{title}</h3>
+          <p className="text-gray-600 text-sm">{location}</p>
+
+          <p className="mt-2 text-yellow-600 font-semibold text-sm">
             Tap to view details →
           </p>
         </div>
@@ -171,8 +185,8 @@ export default function PropertyCard({
               </div>
             </div>
 
-            {/* CONTENT (FIXED SCROLL ISSUE) */}
-            <div className="p-6 space-y-6 overflow-y-auto flex-1">
+            {/* CONTENT */}
+            <div className="p-6 space-y-5 overflow-y-auto flex-1">
 
               <h2 className="text-2xl font-bold">{title}</h2>
               <p className="text-gray-600">{location}</p>

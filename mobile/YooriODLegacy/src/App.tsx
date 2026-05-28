@@ -85,7 +85,7 @@ export default function App() {
           {/* ================= 1 ================= */}
           <PropertyCard
             folder="pulai"
-            title="Pulai Merak Flat (Level 4 Unit)"
+            title="2 Bedrooms | 1 Bathroom Pulai Merak Flat (Level 4 Unit)"
             location="Kangkar Pulai, Johor Bahru"
             price="RM 178K"
             details={[
@@ -115,7 +115,7 @@ export default function App() {
           {/* ================= 2 ================= */}
           <PropertyCard
             folder="bandarserialam"
-            title="Bandar Seri Alam Double Storey House"
+            title="4 Bedrooms | 2 Bathrooms Bandar Seri Alam Double Storey House"
             location="Masai, Johor"
             price="RM 408K"
             details={[
@@ -144,7 +144,7 @@ export default function App() {
           {/* ================= 3 ================= */}
           <PropertyCard
             folder="tamanskudai"
-            title="Taman Skudai Baru Double Storey Terrace"
+            title="4 Bedrooms | 3 Bathrooms Taman Skudai Baru Double Storey Terrace"
             location="Tun Aminah, Johor"
             price="RM 648K"
             details={[
@@ -172,7 +172,7 @@ export default function App() {
           {/* ================= 4 NEW ================= */}
           <PropertyCard
             folder="tamanputeriwangsa"
-            title="Taman Puteri Wangsa Double Storey Medium Cost"
+            title="3 Bedrooms | 2 Bathrooms Taman Puteri Wangsa Double Storey Medium Cost"
             location="Jalan Bestari 15/3, Ulu Tiram"
             price="RM 388K"
             details={[
@@ -203,7 +203,7 @@ export default function App() {
           {/* ================= 5 NEW ================= */}
           <PropertyCard
             folder="tamandatopenggawa_barat"
-            title="Taman Dato Penggawa Barat Terrace House"
+            title="3 Bedrooms | 2 Bathrooms Taman Dato Penggawa Barat Terrace House"
             location="Beside Paradigm Mall, Skudai"
             price="RM 578K"
             details={[
@@ -232,7 +232,7 @@ export default function App() {
           {/* ================= 6 NEW ================= */}
           <PropertyCard
             folder="batupahat_land"
-            title="Rare Jalan Tar Land Lot Sri Medan Batu Pahat"
+            title="Land For Sale 1.67 Acres | Jalan Tar Land Lot Sri Medan Batu Pahat"
             location="Parit Terus, Sri Medan, Batu Pahat"
             price="RM 350K"
             details={[
