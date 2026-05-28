@@ -10,7 +10,7 @@ export default function PropertyCard({
   details = [],
   landmarks = [],
   nearby = [],
-  attractions = []
+  attractions = [],
 }) {
   const [images, setImages] = useState([]);
   const [current, setCurrent] = useState(0);
@@ -33,7 +33,7 @@ export default function PropertyCard({
     loadImages();
   }, [folder]);
 
-  // ================= AUTO SLIDER (CARD ONLY) =================
+  // ================= AUTO SLIDER =================
   useEffect(() => {
     if (images.length <= 1) return;
 
@@ -44,7 +44,7 @@ export default function PropertyCard({
     return () => clearInterval(interval);
   }, [images]);
 
-  // ================= MODAL CONTROL (ESC KEY) =================
+  // ================= ESC CLOSE =================
   useEffect(() => {
     function handleEsc(e) {
       if (e.key === "Escape") setOpen(false);
@@ -54,20 +54,20 @@ export default function PropertyCard({
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
-  // lock scroll when modal open
+  // lock scroll
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "auto";
   }, [open]);
 
   // ================= IMAGE NAV =================
   function nextImage() {
+    if (!images.length) return;
     setCurrent((prev) => (prev + 1) % images.length);
   }
 
   function prevImage() {
-    setCurrent((prev) =>
-      prev === 0 ? images.length - 1 : prev - 1
-    );
+    if (!images.length) return;
+    setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   }
 
   // ================= SWIPE =================
@@ -87,10 +87,23 @@ export default function PropertyCard({
       {/* ================= CARD ================= */}
       <div
         onClick={() => setOpen(true)}
-        className="cursor-pointer bg-white border border-yellow-200 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all"
+        className="
+          cursor-pointer
+          bg-white
+          border border-yellow-200
+          rounded-3xl
+          overflow-hidden
+          shadow-lg
+          hover:shadow-2xl
+          transition-all
+          w-full
+          max-w-sm
+          mx-auto
+          flex flex-col
+        "
       >
         {/* IMAGE */}
-        <div className="h-56 relative bg-gray-100 overflow-hidden">
+        <div className="relative h-56 bg-gray-100 flex-shrink-0 overflow-hidden">
           {images.length > 0 ? (
             <img
               src={images[current]}
@@ -109,11 +122,25 @@ export default function PropertyCard({
           </div>
         </div>
 
-        {/* TEXT */}
-        <div className="p-6">
-          <h3 className="text-xl font-bold">{title}</h3>
-          <p className="text-gray-600">{location}</p>
-          <p className="mt-3 text-yellow-600 font-semibold">
+        {/* TEXT (FIX TITLE HERE) */}
+        <div className="p-5">
+          <h3
+            className="
+              text-lg font-bold
+              leading-snug
+              text-gray-900
+              break-words
+              line-clamp-2
+            "
+          >
+            {title}
+          </h3>
+
+          <p className="text-gray-600 text-sm mt-1">
+            {location}
+          </p>
+
+          <p className="mt-3 text-yellow-600 font-semibold text-sm">
             Tap to view details →
           </p>
         </div>
@@ -122,39 +149,34 @@ export default function PropertyCard({
       {/* ================= MODAL ================= */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
           onClick={() => setOpen(false)}
         >
           <div
             className="
               bg-white
               w-full
-              max-w-[95vw]
-              md:max-w-5xl
+              max-w-5xl
               h-[92vh]
-              md:h-[88vh]
               rounded-3xl
               overflow-hidden
               shadow-2xl
+              flex flex-col
               relative
-              flex
-              flex-col
-              "
-              
-
+            "
             onClick={(e) => e.stopPropagation()}
           >
-            {/* CLOSE BUTTON (floating safe) */}
+            {/* CLOSE */}
             <button
               onClick={() => setOpen(false)}
-              className="fixed top-4 right-4 z-[60] bg-white text-black w-10 h-10 rounded-full flex items-center justify-center shadow-lg"
+              className="absolute top-4 right-4 z-50 bg-white w-10 h-10 rounded-full shadow flex items-center justify-center"
             >
               ✕
             </button>
 
-            {/* IMAGE SLIDER */}
+            {/* IMAGE */}
             <div
-              className="relative h-[38vh] md:h-[52vh] bg-black flex-shrink-0"
+              className="relative h-[40vh] bg-black flex-shrink-0"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
@@ -164,7 +186,7 @@ export default function PropertyCard({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="h-full flex items-center justify-center text-white text-4xl">
+                <div className="h-full flex items-center justify-center text-white text-3xl">
                   🏡
                 </div>
               )}
@@ -191,9 +213,15 @@ export default function PropertyCard({
             </div>
 
             {/* CONTENT */}
-            <div className="p-6 space-y-4 overflow-y-auto">
-              <h2 className="text-2xl font-bold">{title}</h2>
-              <p className="text-gray-600">{location}</p>
+            <div className="p-6 space-y-4 overflow-y-auto flex-1">
+
+              <h2 className="text-2xl font-bold leading-snug">
+                {title}
+              </h2>
+
+              <p className="text-gray-600">
+                {location}
+              </p>
 
               {/* DETAILS */}
               {details.length > 0 && (
@@ -205,7 +233,7 @@ export default function PropertyCard({
                 </div>
               )}
 
-              {/* LANDMARK */}
+              {/* LANDMARKS */}
               {landmarks.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Landmarks</h3>
@@ -237,13 +265,15 @@ export default function PropertyCard({
 
               {/* WHATSAPP */}
               <a
-                href="https://wa.me/+60109688408"
+                href="https://wa.me/60109688408"
                 target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-full mt-4"
               >
                 <FaWhatsapp />
                 Contact Agent
               </a>
+
             </div>
           </div>
         </div>

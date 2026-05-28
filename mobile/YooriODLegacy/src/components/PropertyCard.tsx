@@ -15,91 +15,64 @@ export default function PropertyCard({
   const [images, setImages] = useState([]);
   const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
-  const [touchStart, setTouchStart] = useState(0);
 
-  // ================= LOAD IMAGES =================
+  // LOAD IMAGES
   useEffect(() => {
     async function loadImages() {
       try {
         const data = await getListingImages(folder);
         setImages(data || []);
       } catch (err) {
-        console.error("Image load error:", err);
+        console.error(err);
       }
     }
-
     loadImages();
   }, [folder]);
 
-  // ================= AUTO SLIDER =================
+  // AUTO SLIDER
   useEffect(() => {
     if (images.length <= 1) return;
 
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % images.length);
+      setCurrent((p) => (p + 1) % images.length);
     }, 3000);
 
     return () => clearInterval(interval);
   }, [images]);
 
-  // ================= ESC CLOSE =================
-  useEffect(() => {
-    function handleEsc(e) {
-      if (e.key === "Escape") setOpen(false);
-    }
-
-    window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
-  }, []);
-
-  // lock body scroll
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "auto";
-  }, [open]);
-
-  function nextImage() {
+  // SAFE NEXT/PREV
+  const next = () => {
     if (!images.length) return;
-    setCurrent((prev) => (prev + 1) % images.length);
-  }
+    setCurrent((p) => (p + 1) % images.length);
+  };
 
-  function prevImage() {
+  const prev = () => {
     if (!images.length) return;
-    setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1));
-  }
-
-  function handleTouchStart(e) {
-    setTouchStart(e.touches[0].clientX);
-  }
-
-  function handleTouchEnd(e) {
-    const end = e.changedTouches[0].clientX;
-
-    if (touchStart - end > 50) nextImage();
-    if (end - touchStart > 50) prevImage();
-  }
+    setCurrent((p) => (p === 0 ? images.length - 1 : p - 1));
+  };
 
   return (
     <>
-      {/* ================= CARD (FIXED STRETCH) ================= */}
+      {/* ================= CARD ================= */}
       <div
         onClick={() => setOpen(true)}
         className="
           cursor-pointer
           bg-white
+          text-black
           border border-yellow-200
           rounded-3xl
           overflow-hidden
           shadow-lg
           hover:shadow-2xl
-          transition-all
-          w-full
-          max-w-sm
-          mx-auto
+          transition
           flex flex-col
+          w-full
+          h-full
         "
       >
-        {/* IMAGE (FIXED HEIGHT) */}
-        <div className="relative w-full h-56 bg-gray-100 overflow-hidden flex-shrink-0">
+        {/* IMAGE */}
+        <div className="relative w-full h-56 bg-gray-100 flex-shrink-0">
           {images.length > 0 ? (
             <img
               src={images[current]}
@@ -107,23 +80,26 @@ export default function PropertyCard({
               className="w-full h-full object-cover"
             />
           ) : (
-            <div className="h-full flex items-center justify-center text-5xl">
+            <div className="w-full h-full flex items-center justify-center text-5xl">
               🏡
             </div>
           )}
 
           {/* PRICE */}
-          <div className="absolute top-3 right-3 bg-yellow-400 text-black px-3 py-1 rounded-full font-bold text-sm shadow">
+          <div className="absolute top-3 right-3 bg-yellow-400 text-black px-3 py-1 rounded-full font-bold text-sm">
             {price}
           </div>
         </div>
 
-        {/* TEXT */}
-        <div className="p-6 flex flex-col gap-1">
-          <h3 className="text-xl font-bold leading-snug">{title}</h3>
-          <p className="text-gray-600 text-sm">{location}</p>
+        {/* TEXT (FIX TITLE ISSUE HERE) */}
+        <div className="p-5 flex flex-col gap-2">
+          <h3 className="text-lg font-bold leading-snug line-clamp-2">
+            {title}
+          </h3>
 
-          <p className="mt-2 text-yellow-600 font-semibold text-sm">
+          <p className="text-sm text-gray-600">{location}</p>
+
+          <p className="text-yellow-600 font-semibold text-sm mt-1">
             Tap to view details →
           </p>
         </div>
@@ -136,120 +112,99 @@ export default function PropertyCard({
           onClick={() => setOpen(false)}
         >
           <div
-            className="bg-white w-full max-w-[95vw] md:max-w-5xl h-[90vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col relative"
+            className="bg-white text-black w-full max-w-5xl h-[90vh] rounded-3xl overflow-hidden flex flex-col relative"
             onClick={(e) => e.stopPropagation()}
           >
             {/* CLOSE */}
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-4 right-4 z-50 bg-white w-10 h-10 rounded-full shadow flex items-center justify-center"
+              className="absolute top-4 right-4 bg-white w-10 h-10 rounded-full shadow"
             >
               ✕
             </button>
 
             {/* IMAGE */}
-            <div
-              className="relative h-[40vh] bg-black flex-shrink-0"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
+            <div className="relative h-[40vh] bg-black flex-shrink-0">
               {images.length > 0 ? (
                 <img
                   src={images[current]}
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="h-full flex items-center justify-center text-white text-3xl">
+                <div className="h-full flex items-center justify-center text-white">
                   🏡
                 </div>
               )}
 
-              {/* NAV */}
               <button
-                onClick={prevImage}
+                onClick={prev}
                 className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 px-3 py-2 rounded-full"
               >
                 ◀
               </button>
 
               <button
-                onClick={nextImage}
+                onClick={next}
                 className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 px-3 py-2 rounded-full"
               >
                 ▶
               </button>
 
-              {/* PRICE */}
-              <div className="absolute bottom-3 right-3 bg-yellow-400 text-black px-4 py-1 rounded-full font-bold">
+              <div className="absolute bottom-3 right-3 bg-yellow-400 px-4 py-1 rounded-full font-bold">
                 {price}
               </div>
             </div>
 
             {/* CONTENT */}
-            <div className="p-6 space-y-5 overflow-y-auto flex-1">
-
+            <div className="p-6 overflow-y-auto flex-1 space-y-5">
               <h2 className="text-2xl font-bold">{title}</h2>
               <p className="text-gray-600">{location}</p>
 
-              {/* DETAILS */}
               {details.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Details</h3>
-                  <div className="space-y-1 text-gray-700">
-                    {details.map((d, i) => (
-                      <p key={i}>• {d}</p>
-                    ))}
-                  </div>
+                  {details.map((d, i) => (
+                    <p key={i}>• {d}</p>
+                  ))}
                 </div>
               )}
 
-              {/* LANDMARKS */}
               {landmarks.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Landmarks</h3>
-                  <div className="space-y-1 text-gray-700">
-                    {landmarks.map((l, i) => (
-                      <p key={i}>📍 {l}</p>
-                    ))}
-                  </div>
+                  {landmarks.map((l, i) => (
+                    <p key={i}>📍 {l}</p>
+                  ))}
                 </div>
               )}
 
-              {/* NEARBY */}
               {nearby.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Nearby</h3>
-                  <div className="space-y-1 text-gray-700">
-                    {nearby.map((n, i) => (
-                      <p key={i}>🏙️ {n}</p>
-                    ))}
-                  </div>
+                  {nearby.map((n, i) => (
+                    <p key={i}>🏙️ {n}</p>
+                  ))}
                 </div>
               )}
 
-              {/* ATTRACTIONS */}
               {attractions.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Attractions</h3>
-                  <div className="space-y-1 text-gray-700">
-                    {attractions.map((a, i) => (
-                      <p key={i}>✨ {a}</p>
-                    ))}
-                  </div>
+                  {attractions.map((a, i) => (
+                    <p key={i}>✨ {a}</p>
+                  ))}
                 </div>
               )}
 
-              {/* WHATSAPP */}
               <a
                 href="https://wa.me/60109688408"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-full mt-4"
+                className="inline-flex items-center gap-2 bg-green-500 text-white px-5 py-2 rounded-full"
               >
                 <FaWhatsapp />
                 Contact Agent
               </a>
-
             </div>
           </div>
         </div>
