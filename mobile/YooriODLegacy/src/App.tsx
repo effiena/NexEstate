@@ -29,6 +29,17 @@ export default function App() {
             "
           >
 
+           {/* LOGO */}
+            <div className="flex justify-center mb-6">
+              <img
+                src="/yoori.png"
+                alt="OD Legacy Logo"
+                className="w-[70vw] max-w-[500px] h-auto object-contain"
+
+
+              />
+            </div>
+
             {/* TOP TEXT */}
             <p className="text-yellow-400 tracking-[0.35em] text-xs uppercase mb-5">
               Trusted Property Consultant
@@ -75,7 +86,7 @@ export default function App() {
       <section className="max-w-7xl mx-auto px-6 pb-20">
 
         <h2 className="text-3xl font-bold mb-8 text-gray-800">
-          Featured Listings
+          House For Sales
         </h2>
 
         <div className="grid md:grid-cols-3 gap-8">
@@ -83,45 +94,126 @@ export default function App() {
           {/* PROPERTY 1 */}
           <PropertyCard
             folder="pulai"
-            title="Pulai Merak Flat"
-            location="Johor Bahru"
+            title="2 Bedrooms + 1 Bathroom Pulai Merak Flat"
+            location="Kangkar Pulai, Johor Bahru"
             price="RM 178K"
+
             details={[
-              "2 Bed 1 Bath",
+              "Level 4",
+              "2 Bedrooms | 1 Bathroom",
               "505 sqft",
               "Freehold",
+              "Non-Bumi Lot",
               "Fully Renovated",
-              "Non Bumi",
+              "Security Main Door",
+              "Modern Plaster Ceiling",
+              "Bathroom Mosaic Finish",
+              "Built-In Kitchen Table Top",
+            ]}
+
+            landmarks={[
+              "Universiti Teknologi Malaysia (UTM)",
+              "Skudai–Pontian Highway",
+              "Second Link Expressway",
+            ]}
+
+            nearby={[
+              "U Mall",
+              "AEON Mall",
+              "Skudai Parade",
+              "Paradigm Mall",
+              "Schools & Clinics",
+              "Mini marts & eateries",
+            ]}
+
+            attractions={[
+              "Below Market Value",
+              "Move-In Ready",
+              "Peaceful Residential Environment",
+              "Suitable For Rental Investment",
+              "High Demand Area",
             ]}
           />
 
           {/* PROPERTY 2 */}
           <PropertyCard
             folder="bandarserialam"
-            title="Bandar Seri Alam"
+            title="Landed House 4 Bedrooms + 2 Bathroom Bandar Seri Alam"
             location="Masai, Johor"
             price="RM 408K"
+
             details={[
               "4 Bedrooms | 2 Bathrooms",
               "775 sqft",
               "Fully Renovated",
               "Extended Kitchen",
+              "Master Bedroom Included",
+              "Fully Tiled Flooring",
+              "Stainless Steel Door",
+              "Tiled Car Porch",
+              "Kitchen Table Top",
+              "Awning Installed",
               "Freehold",
+            ]}
+
+            landmarks={[
+              "AEON Seri Alam",
+              "Pasir Gudang Highway",
+              "Masai Town",
+            ]}
+
+            nearby={[
+              "Schools",
+              "Restaurants",
+              "Clinics",
+              "Convenience Stores",
+            ]}
+
+            attractions={[
+              "Family Friendly Area",
+              "Strategic Investment Location",
+              "Move-In Ready",
             ]}
           />
 
           {/* PROPERTY 3 */}
           <PropertyCard
             folder="tamanskudai"
-            title="Taman Skudai Baru"
+            title="Landed House 4 Bedrooms + 3 Bathrooms Taman Skudai Baru"
             location="Tun Aminah, Johor"
             price="RM 648K"
+
             details={[
               "4 Bedrooms | 3 Bathrooms",
-              "Land 22x70",
+              "Land Size 22x70",
+              "Upstairs Family Hall",
               "Fully Extended",
-              "Near Sutera Mall",
-              "Leasehold until 2082",
+              "Parking Up To 3 Cars",
+              "Fully Renovated",
+              "Fully Tiled",
+              "Facing South East",
+              "Leasehold Until 2082",
+            ]}
+
+            landmarks={[
+              "Sutera Mall",
+              "Impian Emas",
+              "Perling",
+              "Nusa Bestari",
+            ]}
+
+            nearby={[
+              "Tun Aminah",
+              "Restaurants & Cafes",
+              "Schools & Clinics",
+              "Highway Access",
+            ]}
+
+            attractions={[
+              "Peaceful Chinese Neighbourhood",
+              "Prime Skudai Location",
+              "Spacious Family Home",
+              "Excellent Accessibility",
             ]}
           />
 
@@ -130,7 +222,7 @@ export default function App() {
 
       {/* ================= FOOTER ================= */}
       <footer className="text-center py-10 text-gray-500 text-sm border-t">
-        © 2026 Yoori OD Legacy Property
+        © 2026 YA OD Legacy Property
       </footer>
 
     </div>

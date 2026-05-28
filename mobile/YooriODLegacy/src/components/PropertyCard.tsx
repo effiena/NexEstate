@@ -126,7 +126,22 @@ export default function PropertyCard({
           onClick={() => setOpen(false)}
         >
           <div
-            className="bg-white w-full max-w-4xl rounded-3xl overflow-hidden shadow-2xl relative"
+            className="
+              bg-white
+              w-full
+              max-w-[95vw]
+              md:max-w-5xl
+              h-[92vh]
+              md:h-[88vh]
+              rounded-3xl
+              overflow-hidden
+              shadow-2xl
+              relative
+              flex
+              flex-col
+              "
+              
+
             onClick={(e) => e.stopPropagation()}
           >
             {/* CLOSE BUTTON (floating safe) */}
@@ -139,7 +154,7 @@ export default function PropertyCard({
 
             {/* IMAGE SLIDER */}
             <div
-              className="relative h-96 bg-black"
+              className="relative h-[38vh] md:h-[52vh] bg-black flex-shrink-0"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
@@ -176,7 +191,7 @@ export default function PropertyCard({
             </div>
 
             {/* CONTENT */}
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 overflow-y-auto">
               <h2 className="text-2xl font-bold">{title}</h2>
               <p className="text-gray-600">{location}</p>
 
