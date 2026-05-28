@@ -50,7 +50,7 @@ export default function App() {
 
               {/* TOP TEXT */}
               <p className="text-yellow-400 tracking-[0.4em] text-xs uppercase mb-6">
-                Trusted Property Consultant
+                ONE DREAM LEGACY Trusted Property Consultant
               </p>
 
               {/* MAIN TITLE */}
