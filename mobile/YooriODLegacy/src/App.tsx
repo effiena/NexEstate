@@ -91,6 +91,11 @@ export default function App() {
               {/* CONTACT */}
               <div className="mt-10 flex flex-col md:flex-row justify-center gap-4">
 
+               <a
+                 href="https://wa.me/60109688408"
+                 target="_blank"
+                 rel="noopener noreferrer"
+               >
                 <button
                   className="
                     bg-yellow-400
@@ -105,7 +110,7 @@ export default function App() {
                 >
                   WhatsApp Yoori Ann
                 </button>
-
+               </a>
                 <button
                   className="
                     border border-yellow-400/40

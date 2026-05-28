@@ -237,7 +237,7 @@ export default function PropertyCard({
 
               {/* WHATSAPP */}
               <a
-                href="https://wa.me/60104576907"
+                href="https://wa.me/+60109688408"
                 target="_blank"
                 className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-full mt-4"
               >
