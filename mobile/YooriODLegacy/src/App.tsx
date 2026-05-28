@@ -7,17 +7,13 @@ export default function App() {
       {/* ================= PREMIUM HERO HEADER ================= */}
       <header className="relative px-6 py-14">
 
-        {/* BACKGROUND */}
         <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-900 to-black" />
-
-        {/* GOLD GLOW */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(234,179,8,0.22),transparent_55%)]" />
 
         <div className="relative z-10 max-w-6xl mx-auto">
 
           <div className="relative overflow-hidden backdrop-blur-2xl bg-white/10 border border-white/15 rounded-[40px] shadow-[0_8px_40px_rgba(0,0,0,0.45)] min-h-[720px] flex items-center justify-center">
 
-            {/* BACKGROUND LOGO */}
             <img
               src="/yoori.png"
               alt="OD Legacy Logo"
@@ -40,8 +36,7 @@ export default function App() {
               </h1>
 
               <p className="text-gray-300 mt-6 text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-                Building Trust For Your Future Home.
-                Premium Property Consultant Specializing In Buying, Selling & Renting Properties Across Johor.
+                Building Trust For Your Future Home. Premium Property Consultant Specializing In Buying, Selling & Renting Properties Across Johor.
               </p>
 
               <div className="mt-10 flex justify-center">
@@ -50,11 +45,7 @@ export default function App() {
 
               <div className="mt-10 flex flex-col md:flex-row justify-center gap-4">
 
-                <a
-                  href="https://wa.me/60109688408"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <a href="https://wa.me/60109688408" target="_blank" rel="noopener noreferrer">
                   <button className="bg-yellow-400 hover:bg-yellow-300 text-black font-semibold px-8 py-4 rounded-full transition-all duration-300 shadow-[0_0_25px_rgba(234,179,8,0.45)]">
                     WhatsApp Yoori Ann
                   </button>
@@ -75,7 +66,6 @@ export default function App() {
       <section className="max-w-7xl mx-auto px-6 pb-24">
 
         <div className="mb-12 text-center">
-
           <p className="text-yellow-400 uppercase tracking-[0.3em] text-xs mb-3">
             Featured Listings
           </p>
@@ -87,132 +77,183 @@ export default function App() {
           <div className="mt-6 flex justify-center">
             <div className="w-40 h-[1px] bg-gradient-to-r from-transparent via-yellow-400 to-transparent" />
           </div>
-
         </div>
 
         {/* ================= GRID ================= */}
         <div className="grid md:grid-cols-3 gap-8">
 
-          {/* ================= PROPERTY 1 ================= */}
+          {/* ================= 1 ================= */}
           <PropertyCard
             folder="pulai"
             title="Pulai Merak Flat (Level 4 Unit)"
             location="Kangkar Pulai, Johor Bahru"
             price="RM 178K"
             details={[
-              "Level 4 Unit",
               "2 Bedrooms | 1 Bathroom",
               "505 sqft",
               "Freehold",
-              "Non-Bumi Lot",
               "Fully Renovated",
-              "Security Main Door",
-              "Fully Tiled Flooring",
-              "Plaster Ceiling",
-              "Bathroom Mosaic Finish",
-              "Built-In Kitchen Table Top",
+              "Non-Bumi Lot",
+              "Level 4 Unit",
             ]}
             landmarks={[
-              "Universiti Teknologi Malaysia (UTM)",
-              "Skudai–Pontian Highway",
-              "Second Link Expressway",
+              "UTM Skudai",
+              "Skudai Highway",
             ]}
             nearby={[
-              "U Mall",
               "AEON Mall",
-              "Skudai Parade",
-              "Paradigm Mall",
-              "Schools & Clinics",
-              "Food & Eateries",
+              "U Mall",
+              "Schools",
             ]}
             attractions={[
-              "Below Market Value RM200k",
-              "High Rental Demand Area",
-              "Move-In Ready Unit",
-              "Strategic Kangkar Pulai Location",
-              "Affordable Entry Investment",
+              "Below Market Value",
+              "High Rental Demand",
+              "Move-In Ready",
             ]}
           />
 
-          {/* ================= PROPERTY 2 ================= */}
+          {/* ================= 2 ================= */}
           <PropertyCard
             folder="bandarserialam"
-            title="Low Cost Double Storey House Bandar Seri Alam"
-            location="Jalan Tasek 22, Masai, Johor"
+            title="Bandar Seri Alam Double Storey House"
+            location="Masai, Johor"
             price="RM 408K"
             details={[
-              "775 sqft",
               "4 Bedrooms | 2 Bathrooms",
+              "775 sqft",
               "Extended Unit",
               "Fully Renovated",
-              "Extended Kitchen",
-              "Master Bedroom Included",
-              "Fully Tiled Flooring",
-              "Stainless Steel Door",
-              "Tiled Car Porch",
-              "Kitchen Table Top",
-              "Awning Installed",
               "Freehold",
             ]}
             landmarks={[
-              "AEON Mall Seri Alam",
-              "Masai Town",
+              "AEON Seri Alam",
               "Pasir Gudang Highway",
+            ]}
+            nearby={[
+              "Schools",
+              "Clinics",
+              "Shops",
+            ]}
+            attractions={[
+              "Family Friendly",
+              "Good Investment",
+              "Move-In Ready",
+            ]}
+          />
+
+          {/* ================= 3 ================= */}
+          <PropertyCard
+            folder="tamanskudai"
+            title="Taman Skudai Baru Double Storey Terrace"
+            location="Tun Aminah, Johor"
+            price="RM 648K"
+            details={[
+              "4 Bedrooms | 3 Bathrooms",
+              "22' x 70'",
+              "Fully Extended",
+              "Renovated",
+              "Leasehold 2082",
+            ]}
+            landmarks={[
+              "Sutera Mall",
+              "Impian Emas",
+            ]}
+            nearby={[
+              "Restaurants",
+              "Schools",
+            ]}
+            attractions={[
+              "Prime Location",
+              "High Value Area",
+              "Spacious Home",
+            ]}
+          />
+
+          {/* ================= 4 NEW ================= */}
+          <PropertyCard
+            folder="tamanputeriwangsa"
+            title="Taman Puteri Wangsa Double Storey Medium Cost"
+            location="Jalan Bestari 15/3, Ulu Tiram"
+            price="RM 388K"
+            details={[
+              "3 Bedrooms | 2 Bathrooms",
+              "770 sqft",
+              "Freehold",
+              "Non-Bumi Lot",
+              "Intermediate Unit",
+              "Renovated",
+              "North-West Facing",
+            ]}
+            landmarks={[
+              "Ulu Tiram Town",
+              "AEON Tebrau",
+            ]}
+            nearby={[
+              "Schools",
+              "Shops",
+              "Clinics",
+            ]}
+            attractions={[
+              "Affordable Double Storey",
+              "Good Location",
+              "Move-In Ready",
+            ]}
+          />
+
+          {/* ================= 5 NEW ================= */}
+          <PropertyCard
+            folder="tamandatopenggawa_barat"
+            title="Taman Dato Penggawa Barat Terrace House"
+            location="Beside Paradigm Mall, Skudai"
+            price="RM 578K"
+            details={[
+              "Single Storey Terrace",
+              "22' x 70'",
+              "3 Bedrooms | 2 Bathrooms",
+              "Freehold",
+              "Non-Bumi Lot",
+            ]}
+            landmarks={[
+              "Paradigm Mall",
+              "Skudai Area",
             ]}
             nearby={[
               "Schools",
               "Restaurants",
               "Clinics",
-              "Convenience Stores",
-              "Highway Access",
             ]}
             attractions={[
-              "Affordable Double Storey Home",
-              "Move-In Ready Condition",
-              "Strategic Seri Alam Location",
-              "Good Investment Potential",
-              "Family Friendly Area",
+              "Prime Location",
+              "High Demand Area",
+              "Near Mall",
             ]}
           />
 
-          {/* ================= PROPERTY 3 ================= */}
+          {/* ================= 6 NEW ================= */}
           <PropertyCard
-            folder="tamanskudai"
-            title="Double Storey Terrace House Taman Skudai Baru"
-            location="Jalan Ronggeng 12, Tun Aminah, Johor"
-            price="RM 648K"
+            folder="batupahat_land"
+            title="Rare Jalan Tar Land Lot Sri Medan Batu Pahat"
+            location="Parit Terus, Sri Medan, Batu Pahat"
+            price="RM 350K"
             details={[
-              "Land Size 22' x 70'",
-              "4 Bedrooms | 3 Bathrooms",
-              "Upstairs Family Hall",
-              "Fully Extended Front & Back",
-              "Parking Up To 3 Cars",
-              "Fully Renovated",
-              "Fully Tiled",
-              "Facing South East",
-              "Leasehold Until 2082",
-              "Peaceful Neighbourhood",
+              "1.67 Acres Land",
+              "Freehold",
+              "Individual Title",
+              "Road Front Access",
+              "Flat Land",
             ]}
             landmarks={[
-              "Sutera Mall",
-              "Impian Emas",
-              "Perling",
-              "Nusa Bestari",
-              "Tun Aminah",
+              "Sri Medan Town",
+              "Batu Pahat Area",
             ]}
             nearby={[
-              "Restaurants & Cafes",
-              "Schools",
-              "Clinics",
-              "Convenience Stores",
-              "Highway Access",
+              "Village Area",
+              "Development Zone",
             ]}
             attractions={[
-              "Prime Skudai Location",
-              "Below Market Value RM660k++",
-              "Move-In Ready Home",
-              "Spacious Family Layout",
-              "High Investment Potential",
+              "Road Access Land",
+              "Investment Ready",
+              "Low Holding Cost",
             ]}
           />
 
