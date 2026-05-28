@@ -7,4 +7,11 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+
+  server: {
+    host: true,
+    allowedHosts: [
+      "welcoming-alignment-production-2b55.up.railway.app"
+    ]
+  }
 })
