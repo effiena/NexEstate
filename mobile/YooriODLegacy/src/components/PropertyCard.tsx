@@ -10,13 +10,11 @@ export default function PropertyCard({
   details = [],
   landmarks = [],
   nearby = [],
-  attractions = []
+  attractions = [],
 }) {
   const [images, setImages] = useState([]);
   const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
-
-  // swipe control
   const [touchStart, setTouchStart] = useState(0);
 
   // ================= LOAD IMAGES =================
@@ -33,7 +31,7 @@ export default function PropertyCard({
     loadImages();
   }, [folder]);
 
-  // ================= AUTO SLIDER (CARD ONLY) =================
+  // ================= AUTO SLIDER =================
   useEffect(() => {
     if (images.length <= 1) return;
 
@@ -44,7 +42,7 @@ export default function PropertyCard({
     return () => clearInterval(interval);
   }, [images]);
 
-  // ================= MODAL CONTROL (ESC KEY) =================
+  // ================= ESC CLOSE =================
   useEffect(() => {
     function handleEsc(e) {
       if (e.key === "Escape") setOpen(false);
@@ -54,23 +52,21 @@ export default function PropertyCard({
     return () => window.removeEventListener("keydown", handleEsc);
   }, []);
 
-  // lock scroll when modal open
+  // lock body scroll
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "auto";
   }, [open]);
 
-  // ================= IMAGE NAV =================
   function nextImage() {
+    if (!images.length) return;
     setCurrent((prev) => (prev + 1) % images.length);
   }
 
   function prevImage() {
-    setCurrent((prev) =>
-      prev === 0 ? images.length - 1 : prev - 1
-    );
+    if (!images.length) return;
+    setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1));
   }
 
-  // ================= SWIPE =================
   function handleTouchStart(e) {
     setTouchStart(e.touches[0].clientX);
   }
@@ -122,39 +118,24 @@ export default function PropertyCard({
       {/* ================= MODAL ================= */}
       {open && (
         <div
-          className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4 overflow-y-auto"
+          className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
           onClick={() => setOpen(false)}
         >
           <div
-            className="
-              bg-white
-              w-full
-              max-w-[95vw]
-              md:max-w-5xl
-              h-[92vh]
-              md:h-[88vh]
-              rounded-3xl
-              overflow-hidden
-              shadow-2xl
-              relative
-              flex
-              flex-col
-              "
-              
-
+            className="bg-white w-full max-w-[95vw] md:max-w-5xl h-[90vh] rounded-3xl overflow-hidden shadow-2xl flex flex-col relative"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* CLOSE BUTTON (floating safe) */}
+            {/* CLOSE */}
             <button
               onClick={() => setOpen(false)}
-              className="fixed top-4 right-4 z-[60] bg-white text-black w-10 h-10 rounded-full flex items-center justify-center shadow-lg"
+              className="absolute top-4 right-4 z-50 bg-white w-10 h-10 rounded-full shadow flex items-center justify-center"
             >
               ✕
             </button>
 
-            {/* IMAGE SLIDER */}
+            {/* IMAGE */}
             <div
-              className="relative h-[38vh] md:h-[52vh] bg-black flex-shrink-0"
+              className="relative h-[40vh] bg-black flex-shrink-0"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
@@ -164,7 +145,7 @@ export default function PropertyCard({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="h-full flex items-center justify-center text-white text-4xl">
+                <div className="h-full flex items-center justify-center text-white text-3xl">
                   🏡
                 </div>
               )}
@@ -190,8 +171,9 @@ export default function PropertyCard({
               </div>
             </div>
 
-            {/* CONTENT */}
-            <div className="p-6 space-y-4 overflow-y-auto">
+            {/* CONTENT (FIXED SCROLL ISSUE) */}
+            <div className="p-6 space-y-6 overflow-y-auto flex-1">
+
               <h2 className="text-2xl font-bold">{title}</h2>
               <p className="text-gray-600">{location}</p>
 
@@ -199,19 +181,23 @@ export default function PropertyCard({
               {details.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Details</h3>
-                  {details.map((d, i) => (
-                    <p key={i}>• {d}</p>
-                  ))}
+                  <div className="space-y-1 text-gray-700">
+                    {details.map((d, i) => (
+                      <p key={i}>• {d}</p>
+                    ))}
+                  </div>
                 </div>
               )}
 
-              {/* LANDMARK */}
+              {/* LANDMARKS */}
               {landmarks.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Landmarks</h3>
-                  {landmarks.map((l, i) => (
-                    <p key={i}>📍 {l}</p>
-                  ))}
+                  <div className="space-y-1 text-gray-700">
+                    {landmarks.map((l, i) => (
+                      <p key={i}>📍 {l}</p>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -219,9 +205,11 @@ export default function PropertyCard({
               {nearby.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Nearby</h3>
-                  {nearby.map((n, i) => (
-                    <p key={i}>🏙️ {n}</p>
-                  ))}
+                  <div className="space-y-1 text-gray-700">
+                    {nearby.map((n, i) => (
+                      <p key={i}>🏙️ {n}</p>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -229,21 +217,25 @@ export default function PropertyCard({
               {attractions.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Attractions</h3>
-                  {attractions.map((a, i) => (
-                    <p key={i}>✨ {a}</p>
-                  ))}
+                  <div className="space-y-1 text-gray-700">
+                    {attractions.map((a, i) => (
+                      <p key={i}>✨ {a}</p>
+                    ))}
+                  </div>
                 </div>
               )}
 
               {/* WHATSAPP */}
               <a
-                href="https://wa.me/+60109688408"
+                href="https://wa.me/60109688408"
                 target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-5 py-2 rounded-full mt-4"
               >
                 <FaWhatsapp />
                 Contact Agent
               </a>
+
             </div>
           </div>
         </div>
