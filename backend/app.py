@@ -21,31 +21,33 @@ CORS(app)
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # =========================================================
-# CONFIG (PRODUCTION SAFE)
+# DATABASE CONFIG
 # =========================================================
 
-# Use PostgreSQL if available (Railway recommended)
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if DATABASE_URL:
     app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 else:
-    # fallback to local SQLite
     DB_PATH = os.path.join(BASE_DIR, "nexestate.db")
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///" + DB_PATH
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# JWT
 app.config["JWT_SECRET_KEY"] = os.environ.get(
     "JWT_SECRET_KEY",
     "nexestate_default_secret_change_me"
 )
 
-# Uploads (Railway-safe)
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+# =========================================================
+# FIXED UPLOAD PATH (IMPORTANT)
+# =========================================================
 
+UPLOAD_FOLDER = os.path.abspath(
+    os.path.join(BASE_DIR, "../mobile/YooriODLegacy/uploads")
+)
+
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # =========================================================
@@ -61,16 +63,9 @@ jwt = JWTManager(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(255), nullable=False)
-
-    phone = db.Column(db.String(50))
-    ren_tag = db.Column(db.String(50))
-    agency = db.Column(db.String(100))
-
-    listings = db.relationship("Listing", backref="user", lazy=True)
 
 
 class Listing(db.Model):
@@ -81,35 +76,17 @@ class Listing(db.Model):
     property_type = db.Column(db.String(100))
     address = db.Column(db.String(255))
     state = db.Column(db.String(100))
-
     selling_price = db.Column(db.Float)
 
-    bedrooms = db.Column(db.Integer)
-    bathrooms = db.Column(db.Integer)
-    parking = db.Column(db.Integer)
-
-    description = db.Column(db.Text)
-
-    agent_name = db.Column(db.String(100))
-    agent_phone = db.Column(db.String(50))
-    agent_email = db.Column(db.String(120))
-
-    images = db.Column(db.Text)  # comma-separated filenames
-
-    status = db.Column(db.String(50), default="active")
-
+    images = db.Column(db.Text)
 
 # =========================================================
-# ROUTES
+# HOME
 # =========================================================
 
 @app.route("/")
 def home():
-    return jsonify({
-        "app": "NexEstate PRO",
-        "status": "running"
-    })
-
+    return jsonify({"app": "NexEstate PRO", "status": "running"})
 
 # =========================================================
 # AUTH
@@ -131,8 +108,7 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    return jsonify({"message": "User registered successfully"})
-
+    return jsonify({"message": "User registered"})
 
 @app.route("/login", methods=["POST"])
 def login():
@@ -148,20 +124,37 @@ def login():
 
     token = create_access_token(identity=str(user.id))
 
-    return jsonify({
-        "message": "Login successful",
-        "token": token
-    })
-
+    return jsonify({"token": token})
 
 # =========================================================
-# UPLOAD SERVING
+# SINGLE FILE UPLOAD ACCESS
 # =========================================================
 
-@app.route("/uploads/<filename>")
+@app.route("/uploads/<path:filename>")
 def uploaded_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
+# =========================================================
+# ⭐ IMPORTANT: LISTING IMAGES ROUTE (YOUR PROPERTYCARD USES THIS)
+# =========================================================
+
+@app.route("/listing-images/<folder>", methods=["GET"])
+def listing_images(folder):
+
+    folder_path = os.path.join(app.config["UPLOAD_FOLDER"], folder)
+
+    if not os.path.exists(folder_path):
+        return jsonify([])
+
+    files = [
+        f for f in os.listdir(folder_path)
+        if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
+    ]
+
+    return jsonify([
+        f"http://127.0.0.1:5000/uploads/{folder}/{file}"
+        for file in files
+    ])
 
 # =========================================================
 # CREATE LISTING
@@ -170,6 +163,7 @@ def uploaded_file(filename):
 @app.route("/listings", methods=["POST"])
 @jwt_required()
 def create_listing():
+
     user_id = int(get_jwt_identity())
 
     title = request.form.get("title")
@@ -177,7 +171,6 @@ def create_listing():
     address = request.form.get("address")
     state = request.form.get("state")
     selling_price = request.form.get("selling_price")
-    description = request.form.get("description")
 
     files = request.files.getlist("images")
 
@@ -196,7 +189,6 @@ def create_listing():
         address=address,
         state=state,
         selling_price=selling_price,
-        description=description,
         images=",".join(image_names)
     )
 
@@ -204,11 +196,9 @@ def create_listing():
     db.session.commit()
 
     return jsonify({
-        "message": "Listing created successfully",
-        "listing_id": listing.id,
+        "message": "Listing created",
         "images": image_names
     })
-
 
 # =========================================================
 # SEARCH LISTINGS
@@ -216,8 +206,8 @@ def create_listing():
 
 @app.route("/search", methods=["GET"])
 def search():
-    listings = Listing.query.all()
 
+    listings = Listing.query.all()
     output = []
 
     for l in listings:
@@ -230,64 +220,15 @@ def search():
         output.append({
             "id": l.id,
             "title": l.title,
-            "selling_price": l.selling_price,
+            "price": l.selling_price,
             "state": l.state,
-            "bedrooms": l.bedrooms,
-            "bathrooms": l.bathrooms,
             "images": image_list
         })
 
     return jsonify(output)
 
-
 # =========================================================
-# UPDATE LISTING
-# =========================================================
-
-@app.route("/listings/<int:id>", methods=["PUT"])
-@jwt_required()
-def update_listing(id):
-    user_id = int(get_jwt_identity())
-
-    listing = Listing.query.filter_by(id=id, user_id=user_id).first()
-
-    if not listing:
-        return jsonify({"message": "Listing not found"}), 404
-
-    data = request.json
-
-    listing.title = data.get("title", listing.title)
-    listing.selling_price = data.get("selling_price", listing.selling_price)
-    listing.address = data.get("address", listing.address)
-    listing.state = data.get("state", listing.state)
-
-    db.session.commit()
-
-    return jsonify({"message": "Listing updated"})
-
-
-# =========================================================
-# DELETE LISTING
-# =========================================================
-
-@app.route("/listings/<int:id>", methods=["DELETE"])
-@jwt_required()
-def delete_listing(id):
-    user_id = int(get_jwt_identity())
-
-    listing = Listing.query.filter_by(id=id, user_id=user_id).first()
-
-    if not listing:
-        return jsonify({"message": "Listing not found"}), 404
-
-    db.session.delete(listing)
-    db.session.commit()
-
-    return jsonify({"message": "Listing deleted"})
-
-
-# =========================================================
-# RAILWAY ENTRY POINT
+# RUN
 # =========================================================
 
 if __name__ == "__main__":
@@ -295,5 +236,4 @@ if __name__ == "__main__":
         db.create_all()
 
     port = int(os.environ.get("PORT", 5000))
-
     app.run(host="0.0.0.0", port=port)
