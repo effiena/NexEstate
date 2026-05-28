@@ -2,7 +2,7 @@ import PropertyCard from "./components/PropertyCard";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-zinc-950 to-black text-white overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-black via-zinc-950 to-black text-white overflow-x-hidden">
 
       {/* ================= PREMIUM HERO HEADER ================= */}
       <header className="relative px-6 py-14">
@@ -80,7 +80,7 @@ export default function App() {
         </div>
 
         {/* ================= GRID ================= */}
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
 
           {/* ================= 1 ================= */}
           <PropertyCard

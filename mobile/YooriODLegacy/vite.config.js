@@ -10,8 +10,6 @@ export default defineConfig({
 
   server: {
     host: true,
-    allowedHosts: [
-      "welcoming-alignment-production-2b55.up.railway.app"
-    ]
+    allowedHosts: "all"
   }
 })
