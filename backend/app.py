@@ -139,9 +139,14 @@ def login():
 # SERVE UPLOAD FILES
 # =========================================================
 
+from flask import send_from_directory
+
 @app.route("/uploads/<path:filename>")
 def uploaded_file(filename):
-    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
+    return send_from_directory(
+        os.path.join(os.getcwd(), "uploads"),
+        filename
+    )
 
 # =========================================================
 # LISTING IMAGES (FIXED CORS + URL)
