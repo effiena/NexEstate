@@ -1,27 +1,21 @@
-const BASE_URL = "https://welcoming-alignment-production-2b55.up.railway.app";
 
+const BASE_URL = "https://welcoming-alignment-production-2b55.up.railway.app";
 
 export const getListingImages = async (folder) => {
   try {
     const res = await fetch(`${BASE_URL}/listing-images/${folder}`);
+    const data = await res.json();
 
-    const text = await res.text();
+    // 🔥 IMPORTANT FIX HERE
+    return data.map(
+      (file) => `${BASE_URL}/uploads/${folder}/${file}`
+    );
 
-    console.log("SERVER RESPONSE:");
-    console.log(text);
-
-    try {
-      return JSON.parse(text);
-    } catch (err) {
-      console.error("Invalid JSON response:", text);
-      return [];
-    }
   } catch (err) {
     console.error("Fetch error:", err);
     return [];
   }
 };
-
 
 // GET LISTINGS
 export async function getListings() {
