@@ -16,7 +16,20 @@ import os
 # =========================================================
 
 app = Flask(__name__)
-CORS(app)
+
+# ✅ FIXED CORS (RAILWAY + FRONTEND SAFE)
+CORS(
+    app,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True
+)
+
+@app.after_request
+def add_cors_headers(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
+    return response
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
@@ -40,13 +53,10 @@ app.config["JWT_SECRET_KEY"] = os.environ.get(
 )
 
 # =========================================================
-# FIXED UPLOAD PATH (IMPORTANT)
+# UPLOAD PATH (FIXED FOR RAILWAY)
 # =========================================================
 
-UPLOAD_FOLDER = os.path.abspath(
-    os.path.join(BASE_DIR, "../mobile/YooriODLegacy/uploads")
-)
-
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
@@ -110,6 +120,7 @@ def register():
 
     return jsonify({"message": "User registered"})
 
+
 @app.route("/login", methods=["POST"])
 def login():
     data = request.json
@@ -127,7 +138,7 @@ def login():
     return jsonify({"token": token})
 
 # =========================================================
-# SINGLE FILE UPLOAD ACCESS
+# SERVE UPLOAD FILES
 # =========================================================
 
 @app.route("/uploads/<path:filename>")
@@ -135,12 +146,10 @@ def uploaded_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 # =========================================================
-# ⭐ IMPORTANT: LISTING IMAGES ROUTE (YOUR PROPERTYCARD USES THIS)
+# LISTING IMAGES (FIXED CORS + URL)
 # =========================================================
-
 @app.route("/listing-images/<folder>", methods=["GET"])
 def listing_images(folder):
-
     folder_path = os.path.join(app.config["UPLOAD_FOLDER"], folder)
 
     if not os.path.exists(folder_path):
@@ -152,7 +161,7 @@ def listing_images(folder):
     ]
 
     return jsonify([
-        f"http://127.0.0.1:5000/uploads/{folder}/{file}"
+        f"{request.host_url}uploads/{folder}/{file}"
         for file in files
     ])
 
@@ -172,6 +181,11 @@ def create_listing():
     state = request.form.get("state")
     selling_price = request.form.get("selling_price")
 
+    folder = secure_filename(title.replace(" ", "_"))
+
+    folder_path = os.path.join(app.config["UPLOAD_FOLDER"], folder)
+    os.makedirs(folder_path, exist_ok=True)
+
     files = request.files.getlist("images")
 
     image_names = []
@@ -179,7 +193,7 @@ def create_listing():
     for file in files:
         if file:
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+            file.save(os.path.join(folder_path, filename))
             image_names.append(filename)
 
     listing = Listing(
@@ -189,7 +203,7 @@ def create_listing():
         address=address,
         state=state,
         selling_price=selling_price,
-        images=",".join(image_names)
+        images=f"{folder}:" + ",".join(image_names)
     )
 
     db.session.add(listing)
@@ -197,6 +211,7 @@ def create_listing():
 
     return jsonify({
         "message": "Listing created",
+        "folder": folder,
         "images": image_names
     })
 
@@ -213,9 +228,10 @@ def search():
     for l in listings:
         image_list = []
 
-        if l.images:
-            for img in l.images.split(","):
-                image_list.append(f"/uploads/{img}")
+        if l.images and ":" in l.images:
+            folder, imgs = l.images.split(":")
+            for img in imgs.split(","):
+                image_list.append(f"/uploads/{folder}/{img}")
 
         output.append({
             "id": l.id,
