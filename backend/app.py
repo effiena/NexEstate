@@ -32,7 +32,6 @@ def add_cors_headers(response):
     return response
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
 # =========================================================
 # DATABASE CONFIG
 # =========================================================
@@ -56,10 +55,9 @@ app.config["JWT_SECRET_KEY"] = os.environ.get(
 # UPLOAD PATH (FIXED FOR RAILWAY)
 # =========================================================
 
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
 
+os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 # =========================================================
 # INIT EXTENSIONS
 # =========================================================
@@ -153,17 +151,14 @@ def listing_images(folder):
     folder_path = os.path.join(app.config["UPLOAD_FOLDER"], folder)
 
     if not os.path.exists(folder_path):
-        return jsonify([])
+        return jsonify([]), 200
 
     files = [
         f for f in os.listdir(folder_path)
         if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
     ]
 
-    return jsonify([
-        f"{request.host_url}uploads/{folder}/{file}"
-        for file in files
-    ])
+    return jsonify(files)
 
 # =========================================================
 # CREATE LISTING
