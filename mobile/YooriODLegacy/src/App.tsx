@@ -2,7 +2,7 @@ import PropertyCard from "./components/PropertyCard";
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-zinc-950 to-black text-white overflow-x-hidden">
+    <div className="min-h-dvh bg-gradient-to-br from-black via-zinc-950 to-black text-white overflow-x-hidden">
 
       {/* ================= PREMIUM HERO HEADER ================= */}
       <header className="relative px-6 py-14">
@@ -12,7 +12,7 @@ export default function App() {
 
         <div className="relative z-10 max-w-6xl mx-auto">
 
-          <div className="relative overflow-hidden backdrop-blur-2xl bg-white/10 border border-white/15 rounded-[40px] shadow-[0_8px_40px_rgba(0,0,0,0.45)] min-h-[720px] flex items-center justify-center">
+          <div className="relative overflow-hidden backdrop-blur-2xl bg-white/10 border border-white/15 rounded-[40px] shadow-[0_8px_40px_rgba(0,0,0,0.45)] min-h-[620px] md:min-h-[720px] flex items-center justify-center">
 
             <img
               src="/yoori.png"
@@ -20,13 +20,13 @@ export default function App() {
               className="absolute inset-0 w-full h-full object-contain opacity-15 scale-110 pointer-events-none select-none"
             />
 
-            <div className="relative z-20 text-center px-8 md:px-14 py-20">
+            <div className="relative z-20 text-center px-5 sm:px-8 md:px-14 py-14 md:py-20">
 
               <p className="text-yellow-400 tracking-[0.4em] text-xs uppercase mb-6">
                 ONE DREAM LEGACY Trusted Property Consultant
               </p>
 
-              <h1 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-wide">
+              <h1 className="text-3xl sm:text-5xl md:text-7xl font-extrabold leading-tight tracking-wide">
                 <span className="text-white drop-shadow-[0_0_18px_rgba(255,255,255,0.35)]">
                   YA |
                 </span>{" "}

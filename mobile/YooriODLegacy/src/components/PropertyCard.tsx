@@ -68,6 +68,7 @@ export default function PropertyCard({
           transition
           flex flex-col
           w-full
+          min-w-0
           h-full
         "
       >
