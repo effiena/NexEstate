@@ -20,11 +20,15 @@ app = Flask(__name__)
 # =========================================================
 # CORS
 # =========================================================
+
 CORS(
     app,
     resources={r"/*": {"origins": "*"}},
-    supports_credentials=True
+    supports_credentials=True,
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["Content-Type", "Authorization"]
 )
+
 # =========================================================
 # BASE DIR
 # =========================================================
@@ -63,15 +67,7 @@ BASE_URL = os.environ.get(
 # UPLOAD PATH
 # =========================================================
 
-app.config["UPLOAD_FOLDER"] = os.path.abspath(
-    os.path.join(
-        BASE_DIR,
-        "mobile",
-        "YooriODLegacy",
-        "uploads"
-    )
-)
-
+app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
 print("UPLOAD FOLDER:")
@@ -122,6 +118,10 @@ class Listing(db.Model):
 # =========================================================
 # HOME
 # =========================================================
+@app.before_request
+def handle_options():
+    if request.method == "OPTIONS":
+        return jsonify({}), 200
 
 @app.route("/")
 def home():
@@ -201,30 +201,29 @@ def login():
 
 @app.route("/uploads/<path:filename>")
 def uploaded_file(filename):
-    return send_from_directory(
-        app.config["UPLOAD_FOLDER"],
-        filename
-    )
+    return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 # =========================================================
 # LISTING IMAGES
 # =========================================================
 
-@app.route("/listing-images/<folder>")
+@app.route("/listing-images/<folder>", methods=["GET", "OPTIONS"])
 def listing_images(folder):
 
     folder_path = os.path.join(app.config["UPLOAD_FOLDER"], folder)
 
     if not os.path.exists(folder_path):
-        return jsonify([])
+        return jsonify([]), 200
 
     files = [
         f for f in os.listdir(folder_path)
         if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
     ]
 
+    base_url = request.host_url.rstrip("/")
+
     return jsonify([
-        f"{request.host_url.rstrip('/')}/uploads/{folder}/{f}"
+        f"{base_url}/uploads/{folder}/{f}"
         for f in files
     ])
 # =========================================================
