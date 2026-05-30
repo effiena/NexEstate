@@ -20,12 +20,10 @@ app = Flask(__name__)
 # =========================================================
 # CORS
 # =========================================================
-
 CORS(
     app,
-    origins="*",
-    allow_headers=["Content-Type", "Authorization"],
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True
 )
 # =========================================================
 # BASE DIR
@@ -212,45 +210,23 @@ def uploaded_file(filename):
 # LISTING IMAGES
 # =========================================================
 
-@app.route("/listing-images/<folder>", methods=["GET"])
+@app.route("/listing-images/<folder>")
 def listing_images(folder):
 
-    folder_path = os.path.join(
-        app.config["UPLOAD_FOLDER"],
-        folder
-    )
-
-    print("FOLDER PATH:")
-    print(folder_path)
+    folder_path = os.path.join(app.config["UPLOAD_FOLDER"], folder)
 
     if not os.path.exists(folder_path):
-
-        print("FOLDER NOT FOUND")
-
-        return jsonify([]), 200
+        return jsonify([])
 
     files = [
         f for f in os.listdir(folder_path)
-        if f.lower().endswith(
-            (
-                ".jpg",
-                ".jpeg",
-                ".png",
-                ".webp"
-            )
-        )
+        if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
     ]
 
-    print("FILES FOUND:")
-    print(files)
-
-    image_urls = [
-        f"{BASE_URL}/uploads/{folder}/{file}"
-        for file in files
-    ]
-
-    return jsonify(image_urls)
-
+    return jsonify([
+        f"{request.host_url.rstrip('/')}/uploads/{folder}/{f}"
+        for f in files
+    ])
 # =========================================================
 # CREATE LISTING
 # =========================================================
