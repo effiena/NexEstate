@@ -17,7 +17,10 @@ import os
 
 app = Flask(__name__)
 
-# ✅ FIXED CORS (RAILWAY + FRONTEND SAFE)
+# =========================================================
+# CORS
+# =========================================================
+
 CORS(
     app,
     resources={r"/*": {"origins": "*"}},
@@ -31,7 +34,12 @@ def add_cors_headers(response):
     response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
     return response
 
+# =========================================================
+# BASE DIR
+# =========================================================
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
 # =========================================================
 # DATABASE CONFIG
 # =========================================================
@@ -52,12 +60,32 @@ app.config["JWT_SECRET_KEY"] = os.environ.get(
 )
 
 # =========================================================
-# UPLOAD PATH (FIXED FOR RAILWAY)
+# BASE URL
 # =========================================================
 
-app.config["UPLOAD_FOLDER"] = os.path.join(BASE_DIR, "uploads")
+BASE_URL = os.environ.get(
+    "BASE_URL",
+    "https://welcoming-alignment-production-2b55.up.railway.app"
+)
+
+# =========================================================
+# UPLOAD PATH
+# =========================================================
+
+app.config["UPLOAD_FOLDER"] = os.path.abspath(
+    os.path.join(
+        BASE_DIR,
+        "mobile",
+        "YooriODLegacy",
+        "uploads"
+    )
+)
 
 os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
+print("UPLOAD FOLDER:")
+print(app.config["UPLOAD_FOLDER"])
+
 # =========================================================
 # INIT EXTENSIONS
 # =========================================================
@@ -71,19 +99,31 @@ jwt = JWTManager(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+
     name = db.Column(db.String(100), nullable=False)
+
     email = db.Column(db.String(120), unique=True, nullable=False)
+
     password = db.Column(db.String(255), nullable=False)
 
 
 class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey("user.id"),
+        nullable=False
+    )
 
     title = db.Column(db.String(200), nullable=False)
+
     property_type = db.Column(db.String(100))
+
     address = db.Column(db.String(255))
+
     state = db.Column(db.String(100))
+
     selling_price = db.Column(db.Float)
 
     images = db.Column(db.Text)
@@ -94,18 +134,28 @@ class Listing(db.Model):
 
 @app.route("/")
 def home():
-    return jsonify({"app": "NexEstate PRO", "status": "running"})
+    return jsonify({
+        "app": "NexEstate PRO",
+        "status": "running"
+    })
 
 # =========================================================
-# AUTH
+# AUTH REGISTER
 # =========================================================
 
 @app.route("/register", methods=["POST"])
 def register():
+
     data = request.json
 
-    if User.query.filter_by(email=data["email"]).first():
-        return jsonify({"message": "Email already registered"}), 400
+    existing_user = User.query.filter_by(
+        email=data["email"]
+    ).first()
+
+    if existing_user:
+        return jsonify({
+            "message": "Email already registered"
+        }), 400
 
     user = User(
         name=data["name"],
@@ -116,54 +166,97 @@ def register():
     db.session.add(user)
     db.session.commit()
 
-    return jsonify({"message": "User registered"})
+    return jsonify({
+        "message": "User registered"
+    })
 
+# =========================================================
+# AUTH LOGIN
+# =========================================================
 
 @app.route("/login", methods=["POST"])
 def login():
+
     data = request.json
 
-    user = User.query.filter_by(email=data["email"]).first()
+    user = User.query.filter_by(
+        email=data["email"]
+    ).first()
 
     if not user:
-        return jsonify({"message": "User not found"}), 404
+        return jsonify({
+            "message": "User not found"
+        }), 404
 
-    if not check_password_hash(user.password, data["password"]):
-        return jsonify({"message": "Invalid password"}), 401
+    if not check_password_hash(
+        user.password,
+        data["password"]
+    ):
+        return jsonify({
+            "message": "Invalid password"
+        }), 401
 
-    token = create_access_token(identity=str(user.id))
+    token = create_access_token(
+        identity=str(user.id)
+    )
 
-    return jsonify({"token": token})
+    return jsonify({
+        "token": token
+    })
 
 # =========================================================
 # SERVE UPLOAD FILES
 # =========================================================
 
-from flask import send_from_directory
-
 @app.route("/uploads/<path:filename>")
 def uploaded_file(filename):
     return send_from_directory(
-        os.path.join(os.getcwd(), "uploads"),
+        app.config["UPLOAD_FOLDER"],
         filename
     )
 
 # =========================================================
-# LISTING IMAGES (FIXED CORS + URL)
+# LISTING IMAGES
 # =========================================================
+
 @app.route("/listing-images/<folder>", methods=["GET"])
 def listing_images(folder):
-    folder_path = os.path.join(app.config["UPLOAD_FOLDER"], folder)
+
+    folder_path = os.path.join(
+        app.config["UPLOAD_FOLDER"],
+        folder
+    )
+
+    print("FOLDER PATH:")
+    print(folder_path)
 
     if not os.path.exists(folder_path):
+
+        print("FOLDER NOT FOUND")
+
         return jsonify([]), 200
 
     files = [
         f for f in os.listdir(folder_path)
-        if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
+        if f.lower().endswith(
+            (
+                ".jpg",
+                ".jpeg",
+                ".png",
+                ".webp"
+            )
+        )
     ]
 
-    return jsonify(files)
+    print("FILES FOUND:")
+    print(files)
+
+    image_urls = [
+        f"{BASE_URL}/uploads/{folder}/{file}"
+        for file in files
+    ]
+
+    return jsonify(image_urls)
 
 # =========================================================
 # CREATE LISTING
@@ -176,14 +269,24 @@ def create_listing():
     user_id = int(get_jwt_identity())
 
     title = request.form.get("title")
+
     property_type = request.form.get("property_type")
+
     address = request.form.get("address")
+
     state = request.form.get("state")
+
     selling_price = request.form.get("selling_price")
 
-    folder = secure_filename(title.replace(" ", "_"))
+    folder = secure_filename(
+        title.replace(" ", "_")
+    )
 
-    folder_path = os.path.join(app.config["UPLOAD_FOLDER"], folder)
+    folder_path = os.path.join(
+        app.config["UPLOAD_FOLDER"],
+        folder
+    )
+
     os.makedirs(folder_path, exist_ok=True)
 
     files = request.files.getlist("images")
@@ -191,9 +294,18 @@ def create_listing():
     image_names = []
 
     for file in files:
+
         if file:
+
             filename = secure_filename(file.filename)
-            file.save(os.path.join(folder_path, filename))
+
+            save_path = os.path.join(
+                folder_path,
+                filename
+            )
+
+            file.save(save_path)
+
             image_names.append(filename)
 
     listing = Listing(
@@ -225,13 +337,17 @@ def search():
     listings = Listing.query.all()
     output = []
 
+    BASE_URL = request.host_url.rstrip("/")
+
     for l in listings:
         image_list = []
 
         if l.images and ":" in l.images:
             folder, imgs = l.images.split(":")
             for img in imgs.split(","):
-                image_list.append(f"/uploads/{folder}/{img}")
+                image_list.append(
+                    f"{BASE_URL}/uploads/{folder}/{img}"
+                )
 
         output.append({
             "id": l.id,
@@ -248,8 +364,15 @@ def search():
 # =========================================================
 
 if __name__ == "__main__":
+
     with app.app_context():
         db.create_all()
 
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    port = int(
+        os.environ.get("PORT", 5000)
+    )
+
+    app.run(
+        host="0.0.0.0",
+        port=port
+    )
