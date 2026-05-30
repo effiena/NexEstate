@@ -4,13 +4,17 @@ const BASE_URL = "https://welcoming-alignment-production-2b55.up.railway.app";
 export const getListingImages = async (folder) => {
   try {
     const res = await fetch(`${BASE_URL}/listing-images/${folder}`);
+
+    if (!res.ok) {
+      console.log("Server error:", res.status);
+      return [];
+    }
+
     const data = await res.json();
 
-    // 🔥 IMPORTANT FIX HERE
-    return data.map(
-      (file) => `${BASE_URL}/uploads/${folder}/${file}`
-    );
+    if (!Array.isArray(data)) return [];
 
+    return data;
   } catch (err) {
     console.error("Fetch error:", err);
     return [];
