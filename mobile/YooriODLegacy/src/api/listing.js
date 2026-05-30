@@ -5,16 +5,17 @@ export const getListingImages = async (folder) => {
   try {
     const res = await fetch(`${BASE_URL}/listing-images/${folder}`);
 
-    if (!res.ok) {
-      console.log("Server error:", res.status);
+    const contentType = res.headers.get("content-type");
+
+    // 🚨 BLOCK HTML RESPONSES
+    if (!contentType || !contentType.includes("application/json")) {
+      console.error("Not JSON response:", await res.text());
       return [];
     }
 
     const data = await res.json();
 
-    if (!Array.isArray(data)) return [];
-
-    return data;
+    return Array.isArray(data) ? data : [];
   } catch (err) {
     console.error("Fetch error:", err);
     return [];
