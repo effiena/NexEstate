@@ -1,75 +1,141 @@
+// =========================
+// BASE URL
+// =========================
+const BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://welcoming-alignment-production-2b55.up.railway.app";
 
-const BASE_URL = "https://welcoming-alignment-production-2b55.up.railway.app";
 
-export const getListingImages = async (folder) => {
+// =========================
+// GET LISTINGS
+// =========================
+export async function getListings() {
   try {
-    const res = await fetch(`${BASE_URL}/listing-images/${folder}`);
+    const res = await fetch(`${BASE_URL}/search`);
 
-    const contentType = res.headers.get("content-type");
-
-    // 🚨 BLOCK HTML RESPONSES
-    if (!contentType || !contentType.includes("application/json")) {
-      console.error("Not JSON response:", await res.text());
-      return [];
+    if (!res.ok) {
+      throw new Error(`GET listings failed: ${res.status}`);
     }
 
-    const data = await res.json();
-
-    return Array.isArray(data) ? data : [];
+    return await res.json();
   } catch (err) {
-    console.error("Fetch error:", err);
+    console.error("getListings error:", err);
     return [];
   }
-};
-
-// GET LISTINGS
-export async function getListings() {
-  const res = await fetch(`${BASE_URL}/search`);
-  return await res.json();
 }
 
+
+// =========================
+// GET LISTING IMAGES
+// =========================
+export async function getListingImages(folder) {
+  try {
+    const res = await fetch(
+      `${BASE_URL}/listing-images/${folder}`
+    );
+
+    if (!res.ok) {
+      throw new Error(
+        `GET listing images failed: ${res.status}`
+      );
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error("getListingImages error:", err);
+    return [];
+  }
+}
+
+
+// =========================
 // CREATE LISTING
+// =========================
 export async function createListing(data) {
-  const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
 
-  const res = await fetch(`${BASE_URL}/listings`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  });
+    const res = await fetch(`${BASE_URL}/listings`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: data,
+    });
 
-  return await res.json();
+    if (!res.ok) {
+      throw new Error(
+        `Create listing failed: ${res.status}`
+      );
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error("createListing error:", err);
+    return { error: true };
+  }
 }
 
+
+// =========================
 // UPDATE LISTING
+// =========================
 export async function updateListing(id, data) {
-  const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
 
-  const res = await fetch(`${BASE_URL}/listings/${id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(data),
-  });
+    const res = await fetch(
+      `${BASE_URL}/listings/${id}`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      }
+    );
 
-  return await res.json();
+    if (!res.ok) {
+      throw new Error(
+        `Update listing failed: ${res.status}`
+      );
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error("updateListing error:", err);
+    return { error: true };
+  }
 }
 
+
+// =========================
 // DELETE LISTING
+// =========================
 export async function deleteListing(id) {
-  const token = localStorage.getItem("token");
+  try {
+    const token = localStorage.getItem("token");
 
-  const res = await fetch(`${BASE_URL}/listings/${id}`, {
-    method: "DELETE",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    const res = await fetch(
+      `${BASE_URL}/listings/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
 
-  return await res.json();
+    if (!res.ok) {
+      throw new Error(
+        `Delete listing failed: ${res.status}`
+      );
+    }
+
+    return await res.json();
+  } catch (err) {
+    console.error("deleteListing error:", err);
+    return { error: true };
+  }
 }
