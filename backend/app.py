@@ -323,38 +323,28 @@ def search():
 # =========================================================
 # LISTING IMAGES
 # =========================================================
-
-@app.route("/listing-images/<folder>")
+@app.route('/listing-images/<folder>', methods=['GET'])
 def listing_images(folder):
+    try:
+        folder_path = os.path.join(app.config['UPLOAD_FOLDER'], folder)
 
-    folder_path = os.path.join(
-        app.config["UPLOAD_FOLDER"],
-        folder
-    )
+        if not os.path.exists(folder_path):
+            return jsonify([])
 
-    if not os.path.exists(folder_path):
+        files = [
+            f for f in os.listdir(folder_path)
+            if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
+        ]
 
+        base_url = request.host_url.rstrip("/")
+
+        return jsonify([
+            f"{base_url}/uploads/{folder}/{f}"
+            for f in files
+        ])
+    except Exception as e:
+        print("ERROR:", e)
         return jsonify([])
-
-    files = [
-        f for f in os.listdir(folder_path)
-        if f.lower().endswith(
-            (
-                ".jpg",
-                ".jpeg",
-                ".png",
-                ".webp"
-            )
-        )
-    ]
-
-    images = [
-        f"{BASE_URL}/uploads/{folder}/{file}"
-        for file in files
-    ]
-
-    return jsonify(images)
-
 # =========================================================
 # SERVE IMAGES
 # =========================================================
