@@ -382,6 +382,19 @@ def test():
         "ok": True
     })
 
+@app.route("/debug")
+def debug():
+
+    folders = []
+
+    if os.path.exists(app.config["UPLOAD_FOLDER"]):
+        folders = os.listdir(app.config["UPLOAD_FOLDER"])
+
+    return jsonify({
+        "upload_folder": app.config["UPLOAD_FOLDER"],
+        "exists": os.path.exists(app.config["UPLOAD_FOLDER"]),
+        "folders": folders
+    })
 # =========================================================
 # RUN
 # =========================================================
