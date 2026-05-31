@@ -12,6 +12,7 @@ from werkzeug.security import (
     check_password_hash
 )
 from werkzeug.utils import secure_filename
+from flask import make_response
 import os
 
 # =========================================================
@@ -27,7 +28,9 @@ app = Flask(__name__)
 CORS(
     app,
     resources={r"/*": {"origins": "*"}},
-    supports_credentials=False
+    supports_credentials=True,
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 )
 
 # =========================================================
@@ -338,10 +341,14 @@ def listing_images(folder):
 
         base_url = request.host_url.rstrip("/")
 
-        return jsonify([
+        response = jsonify([
             f"{base_url}/uploads/{folder}/{f}"
             for f in files
         ])
+
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
     except Exception as e:
         print("ERROR:", e)
         return jsonify([])
@@ -352,15 +359,11 @@ def listing_images(folder):
 @app.route("/uploads/<folder>/<filename>")
 def serve_upload(folder, filename):
 
-    folder_path = os.path.join(
-        app.config["UPLOAD_FOLDER"],
-        folder
-    )
+    folder_path = os.path.join(app.config["UPLOAD_FOLDER"], folder)
 
-    return send_from_directory(
-        folder_path,
-        filename
-    )
+    response = send_from_directory(folder_path, filename)
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 # =========================================================
 # TEST
