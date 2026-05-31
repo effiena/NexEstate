@@ -7,56 +7,44 @@ from flask_jwt_extended import (
     jwt_required,
     get_jwt_identity
 )
-from werkzeug.security import (
-    generate_password_hash,
-    check_password_hash
-)
+from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
-from flask import make_response
 import os
 
 # =========================================================
 # APP INIT
 # =========================================================
-
 app = Flask(__name__)
 
 # =========================================================
-# CORS
+# CORS (CLEAN FIX - IMPORTANT)
 # =========================================================
-
 CORS(
     app,
     resources={r"/*": {"origins": "*"}},
-    supports_credentials=True,
-    allow_headers=["Content-Type", "Authorization"],
-    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+    supports_credentials=False
 )
+
+@app.after_request
+def after_request(response):
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
+    response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
+    return response
 
 # =========================================================
 # PATHS
 # =========================================================
-
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-DB_PATH = os.path.join(
-    BASE_DIR,
-    "nexestate.db"
-)
+DB_PATH = os.path.join(BASE_DIR, "nexestate.db")
 
-UPLOAD_FOLDER = os.path.join(
-    BASE_DIR,
-    "uploads"
-)
-
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-print("UPLOAD_FOLDER =", UPLOAD_FOLDER)
 
 # =========================================================
 # CONFIG
 # =========================================================
-
 app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "DATABASE_URL",
     "sqlite:///" + DB_PATH
@@ -71,139 +59,83 @@ app.config["JWT_SECRET_KEY"] = os.environ.get(
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-BASE_URL = os.environ.get(
-    "BASE_URL",
-    "https://welcoming-alignment-production-2b55.up.railway.app"
-)
+# IMPORTANT: use YOUR OWN backend, not old one
+BASE_URL = "https://nexestate-production.up.railway.app"
 
 # =========================================================
 # EXTENSIONS
 # =========================================================
-
 db = SQLAlchemy(app)
 jwt = JWTManager(app)
 
 # =========================================================
 # MODELS
 # =========================================================
-
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-
     name = db.Column(db.String(100), nullable=False)
-
-    email = db.Column(
-        db.String(120),
-        unique=True,
-        nullable=False
-    )
-
-    password = db.Column(
-        db.String(255),
-        nullable=False
-    )
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
 
 
 class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey("user.id"),
-        nullable=False
-    )
-
-    title = db.Column(
-        db.String(200),
-        nullable=False
-    )
-
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
     property_type = db.Column(db.String(100))
     address = db.Column(db.String(255))
     state = db.Column(db.String(100))
-
     selling_price = db.Column(db.Float)
-
     bedrooms = db.Column(db.Integer)
     bathrooms = db.Column(db.Integer)
     parking = db.Column(db.Integer)
-
     description = db.Column(db.Text)
-
     images = db.Column(db.Text)
 
 # =========================================================
 # HOME
 # =========================================================
-
 @app.route("/")
 def home():
-    return jsonify({
-        "app": "NexEstate PRO",
-        "status": "running"
-    })
+    return jsonify({"app": "NexEstate PRO", "status": "running"})
 
 # =========================================================
 # REGISTER
 # =========================================================
-
 @app.route("/register", methods=["POST"])
 def register():
-
     data = request.json
 
-    if User.query.filter_by(
-        email=data["email"]
-    ).first():
-
-        return jsonify({
-            "message": "Email already registered"
-        }), 400
+    if User.query.filter_by(email=data["email"]).first():
+        return jsonify({"message": "Email already registered"}), 400
 
     user = User(
         name=data["name"],
         email=data["email"],
-        password=generate_password_hash(
-            data["password"]
-        )
+        password=generate_password_hash(data["password"])
     )
 
     db.session.add(user)
     db.session.commit()
 
-    return jsonify({
-        "message": "User registered successfully"
-    })
+    return jsonify({"message": "User registered successfully"})
 
 # =========================================================
 # LOGIN
 # =========================================================
-
 @app.route("/login", methods=["POST"])
 def login():
-
     data = request.json
 
-    user = User.query.filter_by(
-        email=data["email"]
-    ).first()
+    user = User.query.filter_by(email=data["email"]).first()
 
     if not user:
-        return jsonify({
-            "message": "User not found"
-        }), 404
+        return jsonify({"message": "User not found"}), 404
 
-    if not check_password_hash(
-        user.password,
-        data["password"]
-    ):
-        return jsonify({
-            "message": "Invalid password"
-        }), 401
+    if not check_password_hash(user.password, data["password"]):
+        return jsonify({"message": "Invalid password"}), 401
 
-    token = create_access_token(
-        identity=str(user.id)
-    )
+    token = create_access_token(identity=str(user.id))
 
     return jsonify({
         "message": "Login successful",
@@ -213,14 +145,10 @@ def login():
 # =========================================================
 # CREATE LISTING
 # =========================================================
-
 @app.route("/listings", methods=["POST"])
 @jwt_required()
 def create_listing():
-
-    user_id = int(
-        get_jwt_identity()
-    )
+    user_id = int(get_jwt_identity())
 
     title = request.form.get("title")
     property_type = request.form.get("property_type")
@@ -229,38 +157,18 @@ def create_listing():
     selling_price = request.form.get("selling_price")
     description = request.form.get("description")
 
-    folder = secure_filename(
-        title.replace(" ", "_")
-    )
+    folder = secure_filename(title.replace(" ", "_"))
 
-    folder_path = os.path.join(
-        app.config["UPLOAD_FOLDER"],
-        folder
-    )
-
+    folder_path = os.path.join(UPLOAD_FOLDER, folder)
     os.makedirs(folder_path, exist_ok=True)
 
     image_names = []
-
-    files = request.files.getlist(
-        "images"
-    )
+    files = request.files.getlist("images")
 
     for file in files:
-
         if file:
-
-            filename = secure_filename(
-                file.filename
-            )
-
-            save_path = os.path.join(
-                folder_path,
-                filename
-            )
-
-            file.save(save_path)
-
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(folder_path, filename))
             image_names.append(filename)
 
     listing = Listing(
@@ -284,32 +192,22 @@ def create_listing():
     })
 
 # =========================================================
-# SEARCH
+# SEARCH (MAIN FIX - FRONTEND USES THIS)
 # =========================================================
-
 @app.route("/search")
 def search():
-
     listings = Listing.query.all()
 
     output = []
 
     for listing in listings:
-
         images = []
 
         if listing.images and ":" in listing.images:
-
-            folder, files = listing.images.split(
-                ":",
-                1
-            )
+            folder, files = listing.images.split(":", 1)
 
             for file in files.split(","):
-
-                images.append(
-                    f"{BASE_URL}/uploads/{folder}/{file}"
-                )
+                images.append(f"{BASE_URL}/uploads/{folder}/{file}")
 
         output.append({
             "id": listing.id,
@@ -324,85 +222,40 @@ def search():
     return jsonify(output)
 
 # =========================================================
-# LISTING IMAGES
+# SERVE IMAGES (IMPORTANT FIX)
 # =========================================================
-@app.route('/listing-images/<folder>', methods=['GET'])
-def listing_images(folder):
-    try:
-        folder_path = os.path.join(app.config['UPLOAD_FOLDER'], folder)
-
-        if not os.path.exists(folder_path):
-            return jsonify([])
-
-        files = [
-            f for f in os.listdir(folder_path)
-            if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
-        ]
-
-        base_url = request.host_url.rstrip("/")
-
-        response = jsonify([
-            f"{base_url}/uploads/{folder}/{f}"
-            for f in files
-        ])
-
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        return response
-
-    except Exception as e:
-        print("ERROR:", e)
-        return jsonify([])
-# =========================================================
-# SERVE IMAGES
-# =========================================================
-
 @app.route("/uploads/<folder>/<filename>")
 def serve_upload(folder, filename):
-
-    folder_path = os.path.join(app.config["UPLOAD_FOLDER"], folder)
-
-    response = send_from_directory(folder_path, filename)
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+    path = os.path.join(UPLOAD_FOLDER, folder, filename)
+    return send_from_directory(os.path.dirname(path), filename)
 
 # =========================================================
 # TEST
 # =========================================================
-
 @app.route("/test")
 def test():
-    return jsonify({
-        "ok": True
-    })
+    return jsonify({"ok": True})
 
+# =========================================================
+# DEBUG
+# =========================================================
 @app.route("/debug")
 def debug():
-
-    folders = []
-
-    if os.path.exists(app.config["UPLOAD_FOLDER"]):
-        folders = os.listdir(app.config["UPLOAD_FOLDER"])
+    folders = os.listdir(UPLOAD_FOLDER) if os.path.exists(UPLOAD_FOLDER) else []
 
     return jsonify({
-        "upload_folder": app.config["UPLOAD_FOLDER"],
-        "exists": os.path.exists(app.config["UPLOAD_FOLDER"]),
+        "upload_folder": UPLOAD_FOLDER,
         "folders": folders
     })
+
 # =========================================================
 # RUN
 # =========================================================
-
 if __name__ == "__main__":
-
     with app.app_context():
         db.create_all()
 
     app.run(
         host="0.0.0.0",
-        port=int(
-            os.environ.get(
-                "PORT",
-                5000
-            )
-        )
+        port=int(os.environ.get("PORT", 5000))
     )
