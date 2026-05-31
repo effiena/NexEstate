@@ -3,10 +3,20 @@ const BASE_URL =
 
 // GET LISTINGS
 export async function getListings() {
-  const res = await fetch(`${BASE_URL}/search`);
-  return await res.json();
-}
+  try {
+    const res = await fetch(`${BASE_URL}/search`);
 
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error("getListings error:", error);
+    return [];
+  }
+}
 // GET LISTING IMAGES
 export async function getListingImages(folder) {
   try {
