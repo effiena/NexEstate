@@ -1,28 +1,25 @@
-const BASE_URL =
-  "https://welcoming-alignment-production-2b55.up.railway.app";
+const BASE_URL = "";
 
-// GET LISTINGS
+// ================= GET LISTINGS =================
 export async function getListings() {
   try {
-    const res = await fetch(`${BASE_URL}/search`);
+    const res = await fetch(`/api/search`);
 
     if (!res.ok) {
       throw new Error(`HTTP error! status: ${res.status}`);
     }
 
-    const data = await res.json();
-    return data;
+    return await res.json();
   } catch (error) {
     console.error("getListings error:", error);
     return [];
   }
 }
-// GET LISTING IMAGES
+
+// ================= GET LISTING IMAGES =================
 export async function getListingImages(folder) {
   try {
-    const res = await fetch(
-      `${BASE_URL}/listing-images/${folder}`
-    );
+    const res = await fetch(`/api/listing-images/${folder}`);
 
     if (!res.ok) {
       throw new Error("Failed to load images");
@@ -35,11 +32,11 @@ export async function getListingImages(folder) {
   }
 }
 
-// CREATE LISTING
+// ================= CREATE LISTING =================
 export async function createListing(data) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${BASE_URL}/listings`, {
+  const res = await fetch(`/api/listings`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -50,11 +47,11 @@ export async function createListing(data) {
   return await res.json();
 }
 
-// UPDATE LISTING
+// ================= UPDATE LISTING =================
 export async function updateListing(id, data) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${BASE_URL}/listings/${id}`, {
+  const res = await fetch(`/api/listings/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -66,11 +63,11 @@ export async function updateListing(id, data) {
   return await res.json();
 }
 
-// DELETE LISTING
+// ================= DELETE LISTING =================
 export async function deleteListing(id) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${BASE_URL}/listings/${id}`, {
+  const res = await fetch(`/api/listings/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { getListingImages } from "../api/listing";
 import { FaWhatsapp } from "react-icons/fa";
+
+const BASE_URL = "https://nexestate-production.up.railway.app";
 
 export default function PropertyCard({
   folder,
@@ -16,16 +17,24 @@ export default function PropertyCard({
   const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
 
-  // LOAD IMAGES
+  // LOAD IMAGES (FIXED: single backend source)
   useEffect(() => {
     async function loadImages() {
       try {
-        const data = await getListingImages(folder);
-        setImages(data || []);
+        const res = await fetch(`${BASE_URL}/search`);
+        const data = await res.json();
+
+        const listing = data.find((item) =>
+          item.images?.some((img) => img.includes(folder))
+        );
+
+        setImages(listing?.images || []);
+        setCurrent(0);
       } catch (err) {
         console.error(err);
       }
     }
+
     loadImages();
   }, [folder]);
 
@@ -92,7 +101,7 @@ export default function PropertyCard({
           </div>
         </div>
 
-        {/* TEXT (FIX TITLE ISSUE HERE) */}
+        {/* TEXT */}
         <div className="p-5 flex flex-col gap-2">
           <h3 className="text-lg font-bold leading-snug line-clamp-2">
             {title}
