@@ -17,13 +17,9 @@ import os
 app = Flask(__name__)
 
 # =========================================================
-# CORS (CLEAN FIX - IMPORTANT)
+# CORS
 # =========================================================
-CORS(
-    app,
-    resources={r"/*": {"origins": "*"}},
-    supports_credentials=False
-)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=False)
 
 @app.after_request
 def after_request(response):
@@ -36,7 +32,6 @@ def after_request(response):
 # PATHS
 # =========================================================
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
 DB_PATH = os.path.join(BASE_DIR, "nexestate.db")
 
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
@@ -49,7 +44,6 @@ app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get(
     "DATABASE_URL",
     "sqlite:///" + DB_PATH
 )
-
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 app.config["JWT_SECRET_KEY"] = os.environ.get(
@@ -59,7 +53,6 @@ app.config["JWT_SECRET_KEY"] = os.environ.get(
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
-# IMPORTANT: use YOUR OWN backend, not old one
 BASE_URL = "https://nexestate-production.up.railway.app"
 
 # =========================================================
@@ -81,6 +74,7 @@ class User(db.Model):
 class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
     title = db.Column(db.String(200), nullable=False)
     property_type = db.Column(db.String(100))
     address = db.Column(db.String(255))
@@ -90,6 +84,7 @@ class Listing(db.Model):
     bathrooms = db.Column(db.Integer)
     parking = db.Column(db.Integer)
     description = db.Column(db.Text)
+
     images = db.Column(db.Text)
 
 # =========================================================
@@ -157,8 +152,11 @@ def create_listing():
     selling_price = request.form.get("selling_price")
     description = request.form.get("description")
 
-    folder = secure_filename(title.replace(" ", "_"))
+    bedrooms = request.form.get("bedrooms")
+    bathrooms = request.form.get("bathrooms")
+    parking = request.form.get("parking")
 
+    folder = secure_filename(title.replace(" ", "_"))
     folder_path = os.path.join(UPLOAD_FOLDER, folder)
     os.makedirs(folder_path, exist_ok=True)
 
@@ -178,6 +176,9 @@ def create_listing():
         address=address,
         state=state,
         selling_price=selling_price,
+        bedrooms=bedrooms,
+        bathrooms=bathrooms,
+        parking=parking,
         description=description,
         images=f"{folder}:{','.join(image_names)}"
     )
@@ -192,12 +193,11 @@ def create_listing():
     })
 
 # =========================================================
-# SEARCH (MAIN FIX - FRONTEND USES THIS)
+# SEARCH ALL LISTINGS
 # =========================================================
-@app.route("/search")
+@app.route("/search", methods=["GET"])
 def search():
     listings = Listing.query.all()
-
     output = []
 
     for listing in listings:
@@ -207,27 +207,77 @@ def search():
             folder, files = listing.images.split(":", 1)
 
             for file in files.split(","):
-                images.append(f"{BASE_URL}/uploads/{folder}/{file}")
+                if file.strip():
+                    images.append(f"{BASE_URL}/uploads/{folder}/{file}")
 
         output.append({
             "id": listing.id,
             "title": listing.title,
-            "selling_price": listing.selling_price,
+            "property_type": listing.property_type,
+            "address": listing.address,
             "state": listing.state,
+            "selling_price": listing.selling_price,
             "bedrooms": listing.bedrooms,
             "bathrooms": listing.bathrooms,
+            "parking": listing.parking,
+            "description": listing.description,
             "images": images
         })
 
     return jsonify(output)
 
 # =========================================================
-# SERVE IMAGES (IMPORTANT FIX)
+# SINGLE LISTING
 # =========================================================
-@app.route("/uploads/<folder>/<filename>")
+@app.route("/listing/<int:listing_id>", methods=["GET"])
+def get_listing(listing_id):
+    listing = Listing.query.get_or_404(listing_id)
+
+    images = []
+
+    if listing.images and ":" in listing.images:
+        folder, files = listing.images.split(":", 1)
+
+        for file in files.split(","):
+            if file.strip():
+                images.append(f"{BASE_URL}/uploads/{folder}/{file}")
+
+    return jsonify({
+        "id": listing.id,
+        "title": listing.title,
+        "property_type": listing.property_type,
+        "address": listing.address,
+        "state": listing.state,
+        "selling_price": listing.selling_price,
+        "bedrooms": listing.bedrooms,
+        "bathrooms": listing.bathrooms,
+        "parking": listing.parking,
+        "description": listing.description,
+        "images": images
+    })
+
+# =========================================================
+# SERVE IMAGES
+# =========================================================
+@app.route("/uploads/<folder>/<filename>", methods=["GET"])
 def serve_upload(folder, filename):
-    path = os.path.join(UPLOAD_FOLDER, folder, filename)
-    return send_from_directory(os.path.dirname(path), filename)
+    return send_from_directory(
+        os.path.join(UPLOAD_FOLDER, folder),
+        filename
+    )
+
+# =========================================================
+# DEBUG
+# =========================================================
+@app.route("/debug", methods=["GET"])
+def debug():
+    exists = os.path.exists(UPLOAD_FOLDER)
+
+    return jsonify({
+        "upload_folder": UPLOAD_FOLDER,
+        "exists": exists,
+        "folders": os.listdir(UPLOAD_FOLDER) if exists else []
+    })
 
 # =========================================================
 # TEST
@@ -235,18 +285,6 @@ def serve_upload(folder, filename):
 @app.route("/test")
 def test():
     return jsonify({"ok": True})
-
-# =========================================================
-# DEBUG
-# =========================================================
-@app.route("/debug")
-def debug():
-    folders = os.listdir(UPLOAD_FOLDER) if os.path.exists(UPLOAD_FOLDER) else []
-
-    return jsonify({
-        "upload_folder": UPLOAD_FOLDER,
-        "folders": folders
-    })
 
 # =========================================================
 # RUN
