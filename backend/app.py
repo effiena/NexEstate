@@ -16,12 +16,14 @@ import os
 # =========================================================
 
 app = Flask(__name__)
-CORS(app)
+
+# ✅ FIX: CORS must allow frontend domain
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # =========================================================
-# DATABASE CONFIG
+# DATABASE
 # =========================================================
 
 DATABASE_URL = os.environ.get("DATABASE_URL")
@@ -34,28 +36,31 @@ else:
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
+# =========================================================
+# JWT
+# =========================================================
+
 app.config["JWT_SECRET_KEY"] = os.environ.get(
     "JWT_SECRET_KEY",
     "nexestate_default_secret_change_me"
 )
 
+jwt = JWTManager(app)
+
 # =========================================================
-# FIXED UPLOAD PATH (IMPORTANT)
+# UPLOAD FOLDER (FIXED FOR RAILWAY)
 # =========================================================
 
-UPLOAD_FOLDER = os.path.abspath(
-    os.path.join(BASE_DIR, "../mobile/YooriODLegacy/uploads")
-)
-
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 
 # =========================================================
-# INIT EXTENSIONS
+# DB INIT
 # =========================================================
 
 db = SQLAlchemy(app)
-jwt = JWTManager(app)
 
 # =========================================================
 # MODELS
@@ -70,7 +75,7 @@ class User(db.Model):
 
 class Listing(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    user_id = db.Column(db.Integer, nullable=False)
 
     title = db.Column(db.String(200), nullable=False)
     property_type = db.Column(db.String(100))
@@ -110,6 +115,7 @@ def register():
 
     return jsonify({"message": "User registered"})
 
+
 @app.route("/login", methods=["POST"])
 def login():
     data = request.json
@@ -127,7 +133,7 @@ def login():
     return jsonify({"token": token})
 
 # =========================================================
-# SINGLE FILE UPLOAD ACCESS
+# STATIC FILES (IMAGES)
 # =========================================================
 
 @app.route("/uploads/<path:filename>")
@@ -135,7 +141,7 @@ def uploaded_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
 # =========================================================
-# ⭐ IMPORTANT: LISTING IMAGES ROUTE (YOUR PROPERTYCARD USES THIS)
+# ⭐ FIXED LISTING IMAGES API (NO LOCALHOST!)
 # =========================================================
 
 @app.route("/listing-images/<folder>", methods=["GET"])
@@ -151,8 +157,11 @@ def listing_images(folder):
         if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
     ]
 
+    # 🔥 FIX: use Railway domain dynamically
+    base_url = request.host_url.rstrip("/")
+
     return jsonify([
-        f"http://127.0.0.1:5000/uploads/{folder}/{file}"
+        f"{base_url}/uploads/{folder}/{file}"
         for file in files
     ])
 
@@ -210,12 +219,14 @@ def search():
     listings = Listing.query.all()
     output = []
 
+    base_url = request.host_url.rstrip("/")
+
     for l in listings:
         image_list = []
 
         if l.images:
             for img in l.images.split(","):
-                image_list.append(f"/uploads/{img}")
+                image_list.append(f"{base_url}/uploads/{img}")
 
         output.append({
             "id": l.id,
