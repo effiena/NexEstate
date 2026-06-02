@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { getListingImages } from "../api/listing";
 import { FaWhatsapp } from "react-icons/fa";
 
+const BASE_URL = "https://nexestate-production.up.railway.app";
+
 export default function PropertyCard({
   folder,
   title,
@@ -22,7 +24,13 @@ export default function PropertyCard({
     async function loadImages() {
       try {
         const data = await getListingImages(folder);
-        setImages(data || []);
+
+        // 🔥 FIX: force full URL + encode filename
+        const formatted = (data || []).map((img) =>
+          `${BASE_URL}/uploads/${folder}/${encodeURIComponent(img)}`
+        );
+
+        setImages(formatted);
       } catch (err) {
         console.error("Image load error:", err);
       }
@@ -92,6 +100,7 @@ export default function PropertyCard({
               src={images[current]}
               alt={title}
               className="w-full h-full object-cover"
+              loading="lazy"
             />
           ) : (
             <div className="h-full flex items-center justify-center text-5xl">
@@ -143,6 +152,7 @@ export default function PropertyCard({
                 <img
                   src={images[current]}
                   className="w-full h-full object-cover"
+                  loading="lazy"
                 />
               ) : (
                 <div className="h-full flex items-center justify-center text-white text-3xl">
@@ -171,13 +181,11 @@ export default function PropertyCard({
               </div>
             </div>
 
-            {/* CONTENT (FIXED SCROLL ISSUE) */}
+            {/* CONTENT */}
             <div className="p-6 space-y-6 overflow-y-auto flex-1">
-
               <h2 className="text-2xl font-bold">{title}</h2>
               <p className="text-gray-600">{location}</p>
 
-              {/* DETAILS */}
               {details.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Details</h3>
@@ -189,7 +197,6 @@ export default function PropertyCard({
                 </div>
               )}
 
-              {/* LANDMARKS */}
               {landmarks.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Landmarks</h3>
@@ -201,7 +208,6 @@ export default function PropertyCard({
                 </div>
               )}
 
-              {/* NEARBY */}
               {nearby.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Nearby</h3>
@@ -213,7 +219,6 @@ export default function PropertyCard({
                 </div>
               )}
 
-              {/* ATTRACTIONS */}
               {attractions.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Attractions</h3>
@@ -225,7 +230,6 @@ export default function PropertyCard({
                 </div>
               )}
 
-              {/* WHATSAPP */}
               <a
                 href="https://wa.me/60109688408"
                 target="_blank"
@@ -235,7 +239,6 @@ export default function PropertyCard({
                 <FaWhatsapp />
                 Contact Agent
               </a>
-
             </div>
           </div>
         </div>
