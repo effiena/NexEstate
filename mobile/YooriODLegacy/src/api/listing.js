@@ -1,11 +1,11 @@
-const BASE_URL = "http://127.0.0.1:5000";
+const BASE_URL = "https://nexestate-production.up.railway.app";
 
-
-
+// GET LISTING IMAGES
 export async function getListingImages(folder) {
   const res = await fetch(`${BASE_URL}/listing-images/${folder}`);
   return await res.json();
 }
+
 // GET LISTINGS
 export async function getListings() {
   const res = await fetch(`${BASE_URL}/search`);
