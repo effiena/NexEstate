@@ -17,16 +17,9 @@ import os
 app = Flask(__name__)
 
 # =========================================================
-# CORS
+# CORS (CLEAN)
 # =========================================================
-CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=False)
-
-@app.after_request
-def after_request(response):
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    response.headers["Access-Control-Allow-Headers"] = "Content-Type,Authorization"
-    response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
-    return response
+CORS(app)
 
 # =========================================================
 # PATHS
@@ -36,6 +29,8 @@ DB_PATH = os.path.join(BASE_DIR, "nexestate.db")
 
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+BASE_URL = "https://nexestate-production.up.railway.app"
 
 # =========================================================
 # CONFIG
@@ -52,8 +47,6 @@ app.config["JWT_SECRET_KEY"] = os.environ.get(
 )
 
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
-
-BASE_URL = "https://nexestate-production.up.railway.app"
 
 # =========================================================
 # EXTENSIONS
@@ -187,16 +180,15 @@ def create_listing():
     db.session.commit()
 
     return jsonify({
-        "message": "Listing created",
-        "folder": folder,
-        "images": image_names
+        "message": "Listing created successfully",
+        "listing_id": listing.id
     })
 
 # =========================================================
-# SEARCH ALL LISTINGS
+# GET ALL LISTINGS (NEW MAIN API)
 # =========================================================
-@app.route("/search", methods=["GET"])
-def search():
+@app.route("/listings", methods=["GET"])
+def get_listings():
     listings = Listing.query.all()
     output = []
 
@@ -259,7 +251,7 @@ def get_listing(listing_id):
 # =========================================================
 # SERVE IMAGES
 # =========================================================
-@app.route("/uploads/<folder>/<filename>", methods=["GET"])
+@app.route("/uploads/<folder>/<filename>")
 def serve_upload(folder, filename):
     return send_from_directory(
         os.path.join(UPLOAD_FOLDER, folder),
@@ -269,7 +261,7 @@ def serve_upload(folder, filename):
 # =========================================================
 # DEBUG
 # =========================================================
-@app.route("/debug", methods=["GET"])
+@app.route("/debug")
 def debug():
     exists = os.path.exists(UPLOAD_FOLDER)
 
