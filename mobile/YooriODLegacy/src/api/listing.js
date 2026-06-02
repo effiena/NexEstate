@@ -1,12 +1,12 @@
-const BASE_URL = "";
+const BASE_URL = "https://nexestate-production.up.railway.app";
 
 // ================= GET LISTINGS =================
 export async function getListings() {
   try {
-    const res = await fetch(`/api/search`);
+    const res = await fetch(`${BASE_URL}/api/listings`);
 
     if (!res.ok) {
-      throw new Error(`HTTP error! status: ${res.status}`);
+      throw new Error(`HTTP ${res.status}`);
     }
 
     return await res.json();
@@ -19,15 +19,17 @@ export async function getListings() {
 // ================= GET LISTING IMAGES =================
 export async function getListingImages(folder) {
   try {
-    const res = await fetch(`/api/listing-images/${folder}`);
+    const res = await fetch(
+      `${BASE_URL}/api/listing-images/${encodeURIComponent(folder)}`
+    );
 
     if (!res.ok) {
-      throw new Error("Failed to load images");
+      throw new Error(`HTTP ${res.status}`);
     }
 
     return await res.json();
-  } catch (err) {
-    console.error("getListingImages error:", err);
+  } catch (error) {
+    console.error("getListingImages error:", error);
     return [];
   }
 }
@@ -36,7 +38,7 @@ export async function getListingImages(folder) {
 export async function createListing(data) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`/api/listings`, {
+  const res = await fetch(`${BASE_URL}/api/listings`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -51,7 +53,7 @@ export async function createListing(data) {
 export async function updateListing(id, data) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`/api/listings/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/listings/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -67,7 +69,7 @@ export async function updateListing(id, data) {
 export async function deleteListing(id) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`/api/listings/${id}`, {
+  const res = await fetch(`${BASE_URL}/api/listings/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
