@@ -17,11 +17,16 @@ export default function PropertyCard({
   const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
 
-  // LOAD IMAGES (FIXED: single backend source)
+  // LOAD IMAGES (FIXED API)
   useEffect(() => {
     async function loadImages() {
       try {
-        const res = await fetch(`${BASE_URL}/search`);
+        const res = await fetch(`${BASE_URL}/api/search`);
+
+        if (!res.ok) {
+          throw new Error(`HTTP error: ${res.status}`);
+        }
+
         const data = await res.json();
 
         const listing = data.find((item) =>
@@ -31,11 +36,12 @@ export default function PropertyCard({
         setImages(listing?.images || []);
         setCurrent(0);
       } catch (err) {
-        console.error(err);
+        console.error("Image load error:", err);
+        setImages([]);
       }
     }
 
-    loadImages();
+    if (folder) loadImages();
   }, [folder]);
 
   // AUTO SLIDER
@@ -49,7 +55,6 @@ export default function PropertyCard({
     return () => clearInterval(interval);
   }, [images]);
 
-  // SAFE NEXT/PREV
   const next = () => {
     if (!images.length) return;
     setCurrent((p) => (p + 1) % images.length);
@@ -62,27 +67,13 @@ export default function PropertyCard({
 
   return (
     <>
-      {/* ================= CARD ================= */}
+      {/* CARD */}
       <div
         onClick={() => setOpen(true)}
-        className="
-          cursor-pointer
-          bg-white
-          text-black
-          border border-yellow-200
-          rounded-3xl
-          overflow-hidden
-          shadow-lg
-          hover:shadow-2xl
-          transition
-          flex flex-col
-          w-full
-          min-w-0
-          h-full
-        "
+        className="cursor-pointer bg-white text-black border border-yellow-200 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition flex flex-col w-full h-full"
       >
         {/* IMAGE */}
-        <div className="relative w-full h-56 bg-gray-100 flex-shrink-0">
+        <div className="relative w-full h-56 bg-gray-100">
           {images.length > 0 ? (
             <img
               src={images[current]}
@@ -95,7 +86,6 @@ export default function PropertyCard({
             </div>
           )}
 
-          {/* PRICE */}
           <div className="absolute top-3 right-3 bg-yellow-400 text-black px-3 py-1 rounded-full font-bold text-sm">
             {price}
           </div>
@@ -103,26 +93,22 @@ export default function PropertyCard({
 
         {/* TEXT */}
         <div className="p-5 flex flex-col gap-2">
-          <h3 className="text-lg font-bold leading-snug line-clamp-2">
-            {title}
-          </h3>
-
+          <h3 className="text-lg font-bold line-clamp-2">{title}</h3>
           <p className="text-sm text-gray-600">{location}</p>
-
           <p className="text-yellow-600 font-semibold text-sm mt-1">
             Tap to view details →
           </p>
         </div>
       </div>
 
-      {/* ================= MODAL ================= */}
+      {/* MODAL */}
       {open && (
         <div
           className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
           onClick={() => setOpen(false)}
         >
           <div
-            className="bg-white text-black w-full max-w-5xl h-[90vh] rounded-3xl overflow-hidden flex flex-col relative"
+            className="bg-white w-full max-w-5xl h-[90vh] rounded-3xl overflow-hidden flex flex-col relative"
             onClick={(e) => e.stopPropagation()}
           >
             {/* CLOSE */}
@@ -134,11 +120,12 @@ export default function PropertyCard({
             </button>
 
             {/* IMAGE */}
-            <div className="relative h-[40vh] bg-black flex-shrink-0">
+            <div className="relative h-[40vh] bg-black">
               {images.length > 0 ? (
                 <img
                   src={images[current]}
                   className="w-full h-full object-cover"
+                  alt={title}
                 />
               ) : (
                 <div className="h-full flex items-center justify-center text-white">
