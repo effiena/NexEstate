@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaWhatsapp } from "react-icons/fa";
 
-const BASE_URL = "https://nexestate-production.up.railway.app";
-
 export default function PropertyCard({
   folder,
   title,
@@ -17,26 +15,34 @@ export default function PropertyCard({
   const [current, setCurrent] = useState(0);
   const [open, setOpen] = useState(false);
 
-  // LOAD IMAGES (FIXED API)
+  // =========================
+  // LOAD IMAGES FROM /public/uploads
+  // =========================
   useEffect(() => {
     async function loadImages() {
       try {
-        const res = await fetch(`${BASE_URL}/listings`);
+        // IMPORTANT:
+        // images must exist in:
+        // public/uploads/<folder>/
 
-        if (!res.ok) {
-          throw new Error(`HTTP error: ${res.status}`);
-        }
+        const basePath = `/uploads/${folder}`;
+
+        // We assume images are known from folder listing JSON
+        // fallback: try index.json (BEST METHOD)
+        const res = await fetch(`${basePath}/index.json`);
+
+        if (!res.ok) throw new Error("No index.json found");
 
         const data = await res.json();
 
-        const listing = data.find((item) =>
-          item.images?.some((img) => img.includes(folder))
-        );
+        const imgs = data.images.map((img) => `${basePath}/${img}`);
 
-        setImages(listing?.images || []);
+        setImages(imgs);
         setCurrent(0);
       } catch (err) {
-        console.error("Image load error:", err);
+        console.warn("Using fallback image method:", err);
+
+        // fallback: show folder root (optional manual list)
         setImages([]);
       }
     }
@@ -44,7 +50,9 @@ export default function PropertyCard({
     if (folder) loadImages();
   }, [folder]);
 
+  // =========================
   // AUTO SLIDER
+  // =========================
   useEffect(() => {
     if (images.length <= 1) return;
 
@@ -67,7 +75,7 @@ export default function PropertyCard({
 
   return (
     <>
-      {/* CARD */}
+      {/* ================= CARD ================= */}
       <div
         onClick={() => setOpen(true)}
         className="cursor-pointer bg-white text-black border border-yellow-200 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition flex flex-col w-full h-full"
@@ -101,7 +109,7 @@ export default function PropertyCard({
         </div>
       </div>
 
-      {/* MODAL */}
+      {/* ================= MODAL ================= */}
       {open && (
         <div
           className="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"

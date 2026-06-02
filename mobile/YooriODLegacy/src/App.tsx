@@ -82,9 +82,12 @@ export default function App() {
         {/* ================= GRID ================= */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
 
-          {/* ================= 1 ================= */}
           <PropertyCard
-            folder="pulai"
+            images={[
+              "/uploads/pulai/1.jpg",
+              "/uploads/pulai/2.jpg",
+              "/uploads/pulai/3.jpg"
+            ]}
             title="2 Bedrooms | 1 Bathroom Pulai Merak Flat (Level 4 Unit)"
             location="Kangkar Pulai, Johor Bahru"
             price="RM 178K"
@@ -96,25 +99,16 @@ export default function App() {
               "Non-Bumi Lot",
               "Level 4 Unit",
             ]}
-            landmarks={[
-              "UTM Skudai",
-              "Skudai Highway",
-            ]}
-            nearby={[
-              "AEON Mall",
-              "U Mall",
-              "Schools",
-            ]}
-            attractions={[
-              "Below Market Value",
-              "High Rental Demand",
-              "Move-In Ready",
-            ]}
+            landmarks={["UTM Skudai", "Skudai Highway"]}
+            nearby={["AEON Mall", "U Mall", "Schools"]}
+            attractions={["Below Market Value", "High Rental Demand", "Move-In Ready"]}
           />
 
-          {/* ================= 2 ================= */}
           <PropertyCard
-            folder="bandarserialam"
+            images={[
+              "/uploads/bandarserialam/1.jpg",
+              "/uploads/bandarserialam/2.jpg"
+            ]}
             title="4 Bedrooms | 2 Bathrooms Bandar Seri Alam Double Storey House"
             location="Masai, Johor"
             price="RM 408K"
@@ -125,25 +119,16 @@ export default function App() {
               "Fully Renovated",
               "Freehold",
             ]}
-            landmarks={[
-              "AEON Seri Alam",
-              "Pasir Gudang Highway",
-            ]}
-            nearby={[
-              "Schools",
-              "Clinics",
-              "Shops",
-            ]}
-            attractions={[
-              "Family Friendly",
-              "Good Investment",
-              "Move-In Ready",
-            ]}
+            landmarks={["AEON Seri Alam", "Pasir Gudang Highway"]}
+            nearby={["Schools", "Clinics", "Shops"]}
+            attractions={["Family Friendly", "Good Investment", "Move-In Ready"]}
           />
 
-          {/* ================= 3 ================= */}
           <PropertyCard
-            folder="tamanskudai"
+            images={[
+              "/uploads/tamanskudai/1.jpg",
+              "/uploads/tamanskudai/2.jpg"
+            ]}
             title="4 Bedrooms | 3 Bathrooms Taman Skudai Baru Double Storey Terrace"
             location="Tun Aminah, Johor"
             price="RM 648K"
@@ -154,107 +139,42 @@ export default function App() {
               "Renovated",
               "Leasehold 2082",
             ]}
-            landmarks={[
-              "Sutera Mall",
-              "Impian Emas",
-            ]}
-            nearby={[
-              "Restaurants",
-              "Schools",
-            ]}
-            attractions={[
-              "Prime Location",
-              "High Value Area",
-              "Spacious Home",
-            ]}
+            landmarks={["Sutera Mall", "Impian Emas"]}
+            nearby={["Restaurants", "Schools"]}
+            attractions={["Prime Location", "High Value Area", "Spacious Home"]}
           />
 
-          {/* ================= 4 NEW ================= */}
           <PropertyCard
-            folder="tamanputeriwangsa"
-            title="3 Bedrooms | 2 Bathrooms Taman Puteri Wangsa Double Storey Medium Cost"
-            location="Jalan Bestari 15/3, Ulu Tiram"
+            images={["/uploads/tamanputeriwangsa/1.jpg"]}
+            title="3 Bedrooms | 2 Bathrooms Taman Puteri Wangsa"
+            location="Ulu Tiram, Johor"
             price="RM 388K"
-            details={[
-              "3 Bedrooms | 2 Bathrooms",
-              "770 sqft",
-              "Freehold",
-              "Non-Bumi Lot",
-              "Intermediate Unit",
-              "Renovated",
-              "North-West Facing",
-            ]}
-            landmarks={[
-              "Ulu Tiram Town",
-              "AEON Tebrau",
-            ]}
-            nearby={[
-              "Schools",
-              "Shops",
-              "Clinics",
-            ]}
-            attractions={[
-              "Affordable Double Storey",
-              "Good Location",
-              "Move-In Ready",
-            ]}
+            details={["3 Bedrooms | 2 Bathrooms", "770 sqft", "Freehold"]}
+            landmarks={["Ulu Tiram Town"]}
+            nearby={["Schools", "Shops"]}
+            attractions={["Affordable", "Move-In Ready"]}
           />
 
-          {/* ================= 5 NEW ================= */}
           <PropertyCard
-            folder="tamandatopenggawa_barat"
-            title="3 Bedrooms | 2 Bathrooms Taman Dato Penggawa Barat Terrace House"
-            location="Beside Paradigm Mall, Skudai"
+            images={["/uploads/tamandatopenggawa_barat/1.jpg"]}
+            title="Taman Dato Penggawa Barat Terrace House"
+            location="Skudai"
             price="RM 578K"
-            details={[
-              "Single Storey Terrace",
-              "22' x 70'",
-              "3 Bedrooms | 2 Bathrooms",
-              "Freehold",
-              "Non-Bumi Lot",
-            ]}
-            landmarks={[
-              "Paradigm Mall",
-              "Skudai Area",
-            ]}
-            nearby={[
-              "Schools",
-              "Restaurants",
-              "Clinics",
-            ]}
-            attractions={[
-              "Prime Location",
-              "High Demand Area",
-              "Near Mall",
-            ]}
+            details={["3 Bedrooms | 2 Bathrooms", "22' x 70'"]}
+            landmarks={["Paradigm Mall"]}
+            nearby={["Schools", "Restaurants"]}
+            attractions={["Prime Location", "Near Mall"]}
           />
 
-          {/* ================= 6 NEW ================= */}
           <PropertyCard
-            folder="batupahat_land"
-            title="Land For Sale 1.67 Acres | Jalan Tar Land Lot Sri Medan Batu Pahat"
-            location="Parit Terus, Sri Medan, Batu Pahat"
+            images={["/uploads/batupahat_land/1.jpg"]}
+            title="1.67 Acres Land For Sale"
+            location="Batu Pahat"
             price="RM 350K"
-            details={[
-              "1.67 Acres Land",
-              "Freehold",
-              "Individual Title",
-              "Road Front Access",
-              "Flat Land",
-            ]}
-            landmarks={[
-              "Sri Medan Town",
-              "Batu Pahat Area",
-            ]}
-            nearby={[
-              "Village Area",
-              "Development Zone",
-            ]}
-            attractions={[
-              "Road Access Land",
-              "Investment Ready",
-              "Low Holding Cost",
-            ]}
+            details={["Freehold", "Road Access"]}
+            landmarks={["Sri Medan Town"]}
+            nearby={["Village Area"]}
+            attractions={["Investment Ready"]}
           />
 
         </div>
