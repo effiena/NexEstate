@@ -2,7 +2,7 @@ import PropertyCard from "./components/PropertyCard";
 
 export default function App() {
   return (
-    <div className="min-h-dvh bg-gradient-to-br from-black via-zinc-950 to-black text-white overflow-x-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-black via-zinc-950 to-black text-white overflow-hidden">
 
       {/* ================= PREMIUM HERO HEADER ================= */}
       <header className="relative px-6 py-14">
@@ -12,7 +12,7 @@ export default function App() {
 
         <div className="relative z-10 max-w-6xl mx-auto">
 
-          <div className="relative overflow-hidden backdrop-blur-2xl bg-white/10 border border-white/15 rounded-[40px] shadow-[0_8px_40px_rgba(0,0,0,0.45)] min-h-[620px] md:min-h-[720px] flex items-center justify-center">
+          <div className="relative overflow-hidden backdrop-blur-2xl bg-white/10 border border-white/15 rounded-[40px] shadow-[0_8px_40px_rgba(0,0,0,0.45)] min-h-[720px] flex items-center justify-center">
 
             <img
               src="/yoori.png"
@@ -20,13 +20,13 @@ export default function App() {
               className="absolute inset-0 w-full h-full object-contain opacity-15 scale-110 pointer-events-none select-none"
             />
 
-            <div className="relative z-20 text-center px-5 sm:px-8 md:px-14 py-14 md:py-20">
+            <div className="relative z-20 text-center px-8 md:px-14 py-20">
 
               <p className="text-yellow-400 tracking-[0.4em] text-xs uppercase mb-6">
                 ONE DREAM LEGACY Trusted Property Consultant
               </p>
 
-              <h1 className="text-3xl sm:text-5xl md:text-7xl font-extrabold leading-tight tracking-wide">
+              <h1 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-wide">
                 <span className="text-white drop-shadow-[0_0_18px_rgba(255,255,255,0.35)]">
                   YA |
                 </span>{" "}
@@ -80,15 +80,12 @@ export default function App() {
         </div>
 
         {/* ================= GRID ================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+        <div className="grid md:grid-cols-3 gap-8">
 
+          {/* ================= 1 ================= */}
           <PropertyCard
-            images={[
-              "/uploads/pulai/1.jpg",
-              "/uploads/pulai/2.jpg",
-              "/uploads/pulai/3.jpg"
-            ]}
-            title="2 Bedrooms | 1 Bathroom Pulai Merak Flat (Level 4 Unit)"
+            folder="pulai"
+            title="Pulai Merak Flat (Level 4 Unit)"
             location="Kangkar Pulai, Johor Bahru"
             price="RM 178K"
             details={[
@@ -99,17 +96,26 @@ export default function App() {
               "Non-Bumi Lot",
               "Level 4 Unit",
             ]}
-            landmarks={["UTM Skudai", "Skudai Highway"]}
-            nearby={["AEON Mall", "U Mall", "Schools"]}
-            attractions={["Below Market Value", "High Rental Demand", "Move-In Ready"]}
+            landmarks={[
+              "UTM Skudai",
+              "Skudai Highway",
+            ]}
+            nearby={[
+              "AEON Mall",
+              "U Mall",
+              "Schools",
+            ]}
+            attractions={[
+              "Below Market Value",
+              "High Rental Demand",
+              "Move-In Ready",
+            ]}
           />
 
+          {/* ================= 2 ================= */}
           <PropertyCard
-            images={[
-              "/uploads/bandarserialam/1.jpg",
-              "/uploads/bandarserialam/2.jpg"
-            ]}
-            title="4 Bedrooms | 2 Bathrooms Bandar Seri Alam Double Storey House"
+            folder="bandarserialam"
+            title="Bandar Seri Alam Double Storey House"
             location="Masai, Johor"
             price="RM 408K"
             details={[
@@ -119,17 +125,26 @@ export default function App() {
               "Fully Renovated",
               "Freehold",
             ]}
-            landmarks={["AEON Seri Alam", "Pasir Gudang Highway"]}
-            nearby={["Schools", "Clinics", "Shops"]}
-            attractions={["Family Friendly", "Good Investment", "Move-In Ready"]}
+            landmarks={[
+              "AEON Seri Alam",
+              "Pasir Gudang Highway",
+            ]}
+            nearby={[
+              "Schools",
+              "Clinics",
+              "Shops",
+            ]}
+            attractions={[
+              "Family Friendly",
+              "Good Investment",
+              "Move-In Ready",
+            ]}
           />
 
+          {/* ================= 3 ================= */}
           <PropertyCard
-            images={[
-              "/uploads/tamanskudai/1.jpg",
-              "/uploads/tamanskudai/2.jpg"
-            ]}
-            title="4 Bedrooms | 3 Bathrooms Taman Skudai Baru Double Storey Terrace"
+            folder="tamanskudai"
+            title="Taman Skudai Baru Double Storey Terrace"
             location="Tun Aminah, Johor"
             price="RM 648K"
             details={[
@@ -139,42 +154,107 @@ export default function App() {
               "Renovated",
               "Leasehold 2082",
             ]}
-            landmarks={["Sutera Mall", "Impian Emas"]}
-            nearby={["Restaurants", "Schools"]}
-            attractions={["Prime Location", "High Value Area", "Spacious Home"]}
+            landmarks={[
+              "Sutera Mall",
+              "Impian Emas",
+            ]}
+            nearby={[
+              "Restaurants",
+              "Schools",
+            ]}
+            attractions={[
+              "Prime Location",
+              "High Value Area",
+              "Spacious Home",
+            ]}
           />
 
+          {/* ================= 4 NEW ================= */}
           <PropertyCard
-            images={["/uploads/tamanputeriwangsa/1.jpg"]}
-            title="3 Bedrooms | 2 Bathrooms Taman Puteri Wangsa"
-            location="Ulu Tiram, Johor"
+            folder="tamanputeriwangsa"
+            title="Taman Puteri Wangsa Double Storey Medium Cost"
+            location="Jalan Bestari 15/3, Ulu Tiram"
             price="RM 388K"
-            details={["3 Bedrooms | 2 Bathrooms", "770 sqft", "Freehold"]}
-            landmarks={["Ulu Tiram Town"]}
-            nearby={["Schools", "Shops"]}
-            attractions={["Affordable", "Move-In Ready"]}
+            details={[
+              "3 Bedrooms | 2 Bathrooms",
+              "770 sqft",
+              "Freehold",
+              "Non-Bumi Lot",
+              "Intermediate Unit",
+              "Renovated",
+              "North-West Facing",
+            ]}
+            landmarks={[
+              "Ulu Tiram Town",
+              "AEON Tebrau",
+            ]}
+            nearby={[
+              "Schools",
+              "Shops",
+              "Clinics",
+            ]}
+            attractions={[
+              "Affordable Double Storey",
+              "Good Location",
+              "Move-In Ready",
+            ]}
           />
 
+          {/* ================= 5 NEW ================= */}
           <PropertyCard
-            images={["/uploads/tamandatopenggawa_barat/1.jpg"]}
+            folder="tamandatopenggawa_barat"
             title="Taman Dato Penggawa Barat Terrace House"
-            location="Skudai"
+            location="Beside Paradigm Mall, Skudai"
             price="RM 578K"
-            details={["3 Bedrooms | 2 Bathrooms", "22' x 70'"]}
-            landmarks={["Paradigm Mall"]}
-            nearby={["Schools", "Restaurants"]}
-            attractions={["Prime Location", "Near Mall"]}
+            details={[
+              "Single Storey Terrace",
+              "22' x 70'",
+              "3 Bedrooms | 2 Bathrooms",
+              "Freehold",
+              "Non-Bumi Lot",
+            ]}
+            landmarks={[
+              "Paradigm Mall",
+              "Skudai Area",
+            ]}
+            nearby={[
+              "Schools",
+              "Restaurants",
+              "Clinics",
+            ]}
+            attractions={[
+              "Prime Location",
+              "High Demand Area",
+              "Near Mall",
+            ]}
           />
 
+          {/* ================= 6 NEW ================= */}
           <PropertyCard
-            images={["/uploads/batupahat_land/1.jpg"]}
-            title="1.67 Acres Land For Sale"
-            location="Batu Pahat"
+            folder="batupahat_land"
+            title="Rare Jalan Tar Land Lot Sri Medan Batu Pahat"
+            location="Parit Terus, Sri Medan, Batu Pahat"
             price="RM 350K"
-            details={["Freehold", "Road Access"]}
-            landmarks={["Sri Medan Town"]}
-            nearby={["Village Area"]}
-            attractions={["Investment Ready"]}
+            details={[
+              "1.67 Acres Land",
+              "Freehold",
+              "Individual Title",
+              "Road Front Access",
+              "Flat Land",
+            ]}
+            landmarks={[
+              "Sri Medan Town",
+              "Batu Pahat Area",
+            ]}
+            nearby={[
+              "Village Area",
+              "Development Zone",
+            ]}
+            attractions={[
+              "Road Access Land",
+              "Investment Ready",
+              "Low Holding Cost",
+            ]}
           />
 
         </div>
@@ -183,7 +263,7 @@ export default function App() {
       {/* ================= FOOTER ================= */}
       <footer className="border-t border-white/10 py-10 text-center">
         <p className="text-gray-500 text-sm">
-          © 2026 YooriAnn One Dream Legacy Property • Building Trust For Your Future Home
+          © 2026 YA One Dream Legacy Property • Building Trust For Your Future Home
         </p>
       </footer>
 

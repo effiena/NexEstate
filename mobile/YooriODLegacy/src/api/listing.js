@@ -1,59 +1,38 @@
-const BASE_URL = "https://nexestate-production.up.railway.app";
+const BASE_URL = "http://127.0.0.1:5000";
 
-// ================= GET LISTINGS =================
-export async function getListings() {
-  try {
-    const res = await fetch(`${BASE_URL}/api/listings`);
 
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
 
-    return await res.json();
-  } catch (error) {
-    console.error("getListings error:", error);
-    return [];
-  }
-}
-
-// ================= GET LISTING IMAGES =================
 export async function getListingImages(folder) {
-  try {
-    const res = await fetch(
-      `${BASE_URL}/api/listing-images/${encodeURIComponent(folder)}`
-    );
-
-    if (!res.ok) {
-      throw new Error(`HTTP ${res.status}`);
-    }
-
-    return await res.json();
-  } catch (error) {
-    console.error("getListingImages error:", error);
-    return [];
-  }
+  const res = await fetch(`${BASE_URL}/listing-images/${folder}`);
+  return await res.json();
+}
+// GET LISTINGS
+export async function getListings() {
+  const res = await fetch(`${BASE_URL}/search`);
+  return await res.json();
 }
 
-// ================= CREATE LISTING =================
+// CREATE LISTING
 export async function createListing(data) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${BASE_URL}/api/listings`, {
+  const res = await fetch(`${BASE_URL}/listings`, {
     method: "POST",
     headers: {
+      "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: data,
+    body: JSON.stringify(data),
   });
 
   return await res.json();
 }
 
-// ================= UPDATE LISTING =================
+// UPDATE LISTING
 export async function updateListing(id, data) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${BASE_URL}/api/listings/${id}`, {
+  const res = await fetch(`${BASE_URL}/listings/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -65,11 +44,11 @@ export async function updateListing(id, data) {
   return await res.json();
 }
 
-// ================= DELETE LISTING =================
+// DELETE LISTING
 export async function deleteListing(id) {
   const token = localStorage.getItem("token");
 
-  const res = await fetch(`${BASE_URL}/api/listings/${id}`, {
+  const res = await fetch(`${BASE_URL}/listings/${id}`, {
     method: "DELETE",
     headers: {
       Authorization: `Bearer ${token}`,
