@@ -21,7 +21,7 @@ export default function PropertyCard({
   useEffect(() => {
     async function loadImages() {
       try {
-        const res = await fetch(`${BASE_URL}/api/search`);
+        const res = await fetch(`${BASE_URL}/listings`);
 
         if (!res.ok) {
           throw new Error(`HTTP error: ${res.status}`);
