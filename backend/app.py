@@ -148,8 +148,9 @@ def login():
 def uploaded_file(filename):
     return send_from_directory(app.config["UPLOAD_FOLDER"], filename)
 
+
 # =========================================================
-# ⭐ FIXED LISTING IMAGES API (NO LOCALHOST!)
+# LISTING IMAGES API (MAIN FIXED VERSION)
 # =========================================================
 
 @app.route("/listing-images/<folder>", methods=["GET"])
@@ -165,13 +166,13 @@ def listing_images(folder):
         if f.lower().endswith((".jpg", ".jpeg", ".png", ".webp"))
     ]
 
-    # 🔥 FIX: use Railway domain dynamically
     base_url = request.host_url.rstrip("/")
 
     return jsonify([
         f"{base_url}/uploads/{folder}/{file}"
         for file in files
     ])
+
 
 # =========================================================
 # CREATE LISTING
@@ -189,14 +190,21 @@ def create_listing():
     state = request.form.get("state")
     selling_price = request.form.get("selling_price")
 
+    # IMPORTANT: folder name is required from frontend or derived
+    folder = request.form.get("folder")
+
     files = request.files.getlist("images")
 
     image_names = []
 
+    # create folder if not exists
+    folder_path = os.path.join(app.config["UPLOAD_FOLDER"], folder)
+    os.makedirs(folder_path, exist_ok=True)
+
     for file in files:
         if file:
             filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+            file.save(os.path.join(folder_path, filename))
             image_names.append(filename)
 
     listing = Listing(
@@ -214,11 +222,13 @@ def create_listing():
 
     return jsonify({
         "message": "Listing created",
+        "folder": folder,
         "images": image_names
     })
 
+
 # =========================================================
-# SEARCH LISTINGS
+# SEARCH LISTINGS (FIXED - NOW CONSISTENT)
 # =========================================================
 
 @app.route("/search", methods=["GET"])
@@ -230,17 +240,24 @@ def search():
     base_url = request.host_url.rstrip("/")
 
     for l in listings:
+
+        # ⚠️ You MUST store folder name in DB or derive it consistently
+        folder = l.title.replace(" ", "").lower()
+
         image_list = []
 
         if l.images:
             for img in l.images.split(","):
-                image_list.append(f"{base_url}/uploads/{img}")
+                image_list.append(
+                    f"{base_url}/uploads/{folder}/{img}"
+                )
 
         output.append({
             "id": l.id,
             "title": l.title,
             "price": l.selling_price,
             "state": l.state,
+            "folder": folder,
             "images": image_list
         })
 
