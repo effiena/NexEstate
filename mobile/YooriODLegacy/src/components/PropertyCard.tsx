@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { getListingImages } from "../api/listing";
 import { FaWhatsapp } from "react-icons/fa";
 
-const BASE_URL = "https://nexestate-production.up.railway.app";
-
 export default function PropertyCard({
   folder,
   title,
@@ -25,14 +23,14 @@ export default function PropertyCard({
       try {
         const data = await getListingImages(folder);
 
-        // 🔥 FIX: force full URL + encode filename
-        const formatted = (data || []).map((img) =>
-          `${BASE_URL}/uploads/${folder}/${encodeURIComponent(img)}`
-        );
+        console.log("Folder:", folder);
+        console.log("Images:", data);
 
-        setImages(formatted);
+        setImages(data || []);
+        setCurrent(0);
       } catch (err) {
         console.error("Image load error:", err);
+        setImages([]);
       }
     }
 
@@ -53,26 +51,35 @@ export default function PropertyCard({
   // ================= ESC CLOSE =================
   useEffect(() => {
     function handleEsc(e) {
-      if (e.key === "Escape") setOpen(false);
+      if (e.key === "Escape") {
+        setOpen(false);
+      }
     }
 
     window.addEventListener("keydown", handleEsc);
-    return () => window.removeEventListener("keydown", handleEsc);
+
+    return () => {
+      window.removeEventListener("keydown", handleEsc);
+    };
   }, []);
 
-  // lock body scroll
+  // ================= BODY SCROLL LOCK =================
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "auto";
   }, [open]);
 
   function nextImage() {
     if (!images.length) return;
+
     setCurrent((prev) => (prev + 1) % images.length);
   }
 
   function prevImage() {
     if (!images.length) return;
-    setCurrent((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+
+    setCurrent((prev) =>
+      prev === 0 ? images.length - 1 : prev - 1
+    );
   }
 
   function handleTouchStart(e) {
@@ -101,6 +108,12 @@ export default function PropertyCard({
               alt={title}
               className="w-full h-full object-cover"
               loading="lazy"
+              onError={() =>
+                console.error(
+                  "Failed image:",
+                  images[current]
+                )
+              }
             />
           ) : (
             <div className="h-full flex items-center justify-center text-5xl">
@@ -118,6 +131,7 @@ export default function PropertyCard({
         <div className="p-6">
           <h3 className="text-xl font-bold">{title}</h3>
           <p className="text-gray-600">{location}</p>
+
           <p className="mt-3 text-yellow-600 font-semibold">
             Tap to view details →
           </p>
@@ -151,8 +165,15 @@ export default function PropertyCard({
               {images.length > 0 ? (
                 <img
                   src={images[current]}
+                  alt={title}
                   className="w-full h-full object-cover"
                   loading="lazy"
+                  onError={() =>
+                    console.error(
+                      "Failed image:",
+                      images[current]
+                    )
+                  }
                 />
               ) : (
                 <div className="h-full flex items-center justify-center text-white text-3xl">
@@ -160,20 +181,24 @@ export default function PropertyCard({
                 </div>
               )}
 
-              {/* NAV */}
-              <button
-                onClick={prevImage}
-                className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 px-3 py-2 rounded-full"
-              >
-                ◀
-              </button>
+              {/* NAVIGATION */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 px-3 py-2 rounded-full"
+                  >
+                    ◀
+                  </button>
 
-              <button
-                onClick={nextImage}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 px-3 py-2 rounded-full"
-              >
-                ▶
-              </button>
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 px-3 py-2 rounded-full"
+                  >
+                    ▶
+                  </button>
+                </>
+              )}
 
               {/* PRICE */}
               <div className="absolute bottom-3 right-3 bg-yellow-400 text-black px-4 py-1 rounded-full font-bold">
@@ -184,11 +209,13 @@ export default function PropertyCard({
             {/* CONTENT */}
             <div className="p-6 space-y-6 overflow-y-auto flex-1">
               <h2 className="text-2xl font-bold">{title}</h2>
+
               <p className="text-gray-600">{location}</p>
 
               {details.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Details</h3>
+
                   <div className="space-y-1 text-gray-700">
                     {details.map((d, i) => (
                       <p key={i}>• {d}</p>
@@ -200,6 +227,7 @@ export default function PropertyCard({
               {landmarks.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Landmarks</h3>
+
                   <div className="space-y-1 text-gray-700">
                     {landmarks.map((l, i) => (
                       <p key={i}>📍 {l}</p>
@@ -211,6 +239,7 @@ export default function PropertyCard({
               {nearby.length > 0 && (
                 <div>
                   <h3 className="font-semibold mb-2">Nearby</h3>
+
                   <div className="space-y-1 text-gray-700">
                     {nearby.map((n, i) => (
                       <p key={i}>🏙️ {n}</p>
@@ -221,7 +250,10 @@ export default function PropertyCard({
 
               {attractions.length > 0 && (
                 <div>
-                  <h3 className="font-semibold mb-2">Attractions</h3>
+                  <h3 className="font-semibold mb-2">
+                    Attractions
+                  </h3>
+
                   <div className="space-y-1 text-gray-700">
                     {attractions.map((a, i) => (
                       <p key={i}>✨ {a}</p>
