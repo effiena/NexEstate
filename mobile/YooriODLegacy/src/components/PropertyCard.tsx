@@ -101,7 +101,7 @@ export default function PropertyCard({
         className="cursor-pointer bg-white border border-yellow-200 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all"
       >
         {/* IMAGE */}
-        <div className="h-56 relative bg-gray-100 overflow-hidden">
+        <div className="relative aspect-[16/10] bg-gray-100 overflow-hidden">
           {images.length > 0 ? (
             <img
               src={images[current]}
@@ -158,7 +158,7 @@ export default function PropertyCard({
 
             {/* IMAGE */}
             <div
-              className="relative h-[40vh] bg-black flex-shrink-0"
+              className="relative aspect-[16/10] md:aspect-[16/9] bg-black flex-shrink-0"
               onTouchStart={handleTouchStart}
               onTouchEnd={handleTouchEnd}
             >
