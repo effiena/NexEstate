@@ -151,7 +151,7 @@ export default function PropertyCard({
             {/* CLOSE */}
             <button
               onClick={() => setOpen(false)}
-              className="absolute top-4 right-4 z-50 bg-white w-10 h-10 rounded-full shadow flex items-center justify-center"
+              className="absolute top-4 right-4 z-50 bg-black w-10 h-10 rounded-full shadow flex items-center justify-center"
             >
               ✕
             </button>
@@ -176,7 +176,7 @@ export default function PropertyCard({
                   }
                 />
               ) : (
-                <div className="h-full flex items-center justify-center text-white text-3xl">
+                <div className="h-full flex items-center justify-center text-black text-3xl">
                   🏡
                 </div>
               )}
@@ -208,7 +208,7 @@ export default function PropertyCard({
 
             {/* CONTENT */}
             <div className="p-6 space-y-6 overflow-y-auto flex-1">
-              <h2 className="text-2xl font-bold">{title}</h2>
+              <h2 className="text-2xl font-bold text-black">{title}</h2>
 
               <p className="text-gray-600">{location}</p>
 
