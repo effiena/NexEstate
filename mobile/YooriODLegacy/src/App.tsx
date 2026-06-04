@@ -26,7 +26,7 @@ export default function App() {
                 ONE DREAM LEGACY Trusted Property Consultant
               </p>
 
-              <h1 className="text-5xl md:text-7xl font-extrabold leading-tight tracking-wide">
+              <h1 className="text-3xl md:text-2xl font-extrabold leading-tight tracking-wide">
                 <span className="text-white drop-shadow-[0_0_18px_rgba(255,255,255,0.35)]">
                   YA |
                 </span>{" "}
