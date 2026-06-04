@@ -158,9 +158,9 @@ export default function PropertyCard({
 
             {/* IMAGE */}
             <div
-              className="relative aspect-[16/10] md:aspect-[16/9] bg-black flex-shrink-0"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
+              className="relative w-full max-h-[55vh] md:max-h-[60vh] bg-black flex-shrink-0"
+              onPointerDown={handleTouchStart}
+              onPointerUp={handleTouchEnd}
             >
               {images.length > 0 ? (
                 <img
