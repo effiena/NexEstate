@@ -18,15 +18,17 @@ import os
 app = Flask(__name__)
 
 # ✅ FIX: CORS must allow frontend domain
-CORS(app, resources={
-    r"/*": {
-        "origins": [
-            "https://welcoming-alignment-production-2b55.up.railway.app",
-            "http://localhost:5173",
-            "http://127.0.0.1:5173"
-        ]
-    }
-})
+CORS(
+    app,
+    supports_credentials=True,
+    origins=[
+        "https://welcoming-alignment-production-2b55.up.railway.app",
+        "http://localhost:5173",
+        "http://127.0.0.1:5173"
+    ],
+    allow_headers=["Content-Type", "Authorization"],
+    methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"]
+)
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
