@@ -129,7 +129,7 @@ export default function PropertyCard({
 
         {/* TEXT */}
         <div className="p-6">
-          <h3 className="text-xl font-bold">{title}</h3>
+          <h3 className="text-xl text-black  font-bold">{title}</h3>
           <p className="text-gray-600">{location}</p>
 
           <p className="mt-3 text-yellow-600 font-semibold">
