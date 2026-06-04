@@ -51,9 +51,6 @@ export default function App() {
                   </button>
                 </a>
 
-                <button className="border border-yellow-400/40 hover:border-yellow-400 hover:bg-white/10 text-yellow-400 font-semibold px-8 py-4 rounded-full transition-all duration-300">
-                  View Listings
-                </button>
 
               </div>
 
