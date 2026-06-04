@@ -253,6 +253,45 @@ export default function App() {
               "Low Holding Cost",
             ]}
           />
+          
+          {/* ================= 7 NEW ================= */}
+          <PropertyCard
+            folder="ayeraresidence"
+            title="4 Bedrooms | 4 Bathrooms Ayera Residences 2 Storey Terrace | Permas Jaya (20x70)"
+            location="Permas Jaya, Johor Bahru"
+            price="RM 820K (Bumi) / RM 850K (Non-Bumi)"
+            details={[
+              "2 Storey Terrace House",
+              "Land Area: 20' x 70'",
+              "Built-up: 1,700 sq.ft.",
+              "4 Bedrooms | 4 Bathrooms",
+              "Facing: Northeast",
+              "Gated & Guarded",
+              "Renovated",
+              "Freehold",
+              "Bumi Lot (Conversion possible, under owner ad)"
+            ]}
+            landmarks={[
+              "Permas Jaya Town",
+              "Johor Bahru City Access",
+            ]}
+            nearby={[
+              "AEON Permas Jaya",
+              "Schools",
+              "Restaurants",
+              "Clinics",
+            ]}
+            attractions={[
+              "Fully Furnished Package",
+              "Move-In Ready",
+              "High Demand Area",
+              "Investment Potential",
+            ]}
+          />
+
+
+
+
 
         </div>
       </section>
