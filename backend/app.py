@@ -22,7 +22,7 @@ CORS(
     app,
     supports_credentials=True,
     origins=[
-        "https://welcoming-alignment-production-2b55.up.railway.app",
+        "https://yoorirealtyventures.up.railway.app",
         "http://localhost:5173",
         "http://127.0.0.1:5173"
     ],
