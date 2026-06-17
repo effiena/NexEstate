@@ -28,7 +28,7 @@ export default function App() {
 
               <h1 className="text-3xl md:text-2xl font-extrabold leading-tight tracking-wide">
                 <span className="text-white drop-shadow-[0_0_18px_rgba(255,255,255,0.35)]">
-                  YA |
+                  NARA CHIN |
                 </span>{" "}
                 <span className="text-yellow-400 drop-shadow-[0_0_22px_rgba(234,179,8,0.85)]">
                   NaraDella Realty Ventures 
