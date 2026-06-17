@@ -23,7 +23,7 @@ export default function App() {
             <div className="relative z-20 text-center px-8 md:px-14 py-20">
 
               <p className="text-yellow-400 tracking-[0.4em] text-xs uppercase mb-6">
-                ONE DREAM LEGACY Trusted Property Consultant
+                Nara Della Realty Ventures Trusted Property Consultant
               </p>
 
               <h1 className="text-3xl md:text-2xl font-extrabold leading-tight tracking-wide">
@@ -31,7 +31,7 @@ export default function App() {
                   YA |
                 </span>{" "}
                 <span className="text-yellow-400 drop-shadow-[0_0_22px_rgba(234,179,8,0.85)]">
-                  One Dream Legacy Property
+                  NaraDella Realty Ventures 
                 </span>
               </h1>
 
@@ -47,7 +47,7 @@ export default function App() {
 
                 <a href="https://wa.me/60109688408" target="_blank" rel="noopener noreferrer">
                   <button className="bg-yellow-400 hover:bg-yellow-300 text-black font-semibold px-8 py-4 rounded-full transition-all duration-300 shadow-[0_0_25px_rgba(234,179,8,0.45)]">
-                    WhatsApp Yoori Ann
+                    WhatsApp Nara
                   </button>
                 </a>
 
@@ -68,7 +68,7 @@ export default function App() {
           </p>
 
           <h2 className="text-4xl md:text-5xl font-bold">
-            Houses For Sale
+            Houses and Land For Sale
           </h2>
 
           <div className="mt-6 flex justify-center">
@@ -299,7 +299,7 @@ export default function App() {
       {/* ================= FOOTER ================= */}
       <footer className="border-t border-white/10 py-10 text-center">
         <p className="text-gray-500 text-sm">
-          © 2026 YA One Dream Legacy Property • Building Trust For Your Future Home
+          © 2026 NaraDella Realty Ventures • Building Trust For Your Future Home
         </p>
       </footer>
 
