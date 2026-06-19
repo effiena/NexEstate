@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Calculator</title>
+
+<style>
+body{
+    font-family: Arial, sans-serif;
+    background:#f4f4f4;
+    margin:0;
+    padding:20px;
+}
+
+.container{
+    max-width:600px;
+    margin:auto;
+    background:white;
+    padding:20px;
+    border-radius:12px;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+h1{
+    text-align:center;
+}
+
+.card{
+    margin-top:20px;
+    padding:15px;
+    border:1px solid #ddd;
+    border-radius:10px;
+}
+
+label{
+    display:block;
+    margin-top:10px;
+    font-weight:bold;
+}
+
+input, select{
+    width:100%;
+    padding:10px;
+    margin-top:5px;
+    border-radius:6px;
+    border:1px solid #ccc;
+    box-sizing:border-box;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    margin-top:15px;
+    border:none;
+    background:#007bff;
+    color:white;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:16px;
+}
+
+button:hover{
+    background:#0056b3;
+}
+
+.result{
+    margin-top:15px;
+    padding:12px;
+    background:#f8f9fa;
+    border-radius:6px;
+    line-height:1.8;
+}
+
+hr{
+    margin:30px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🏠 Property Calculator</h1>
+
+<div class="card">
+<h2>Tenancy Payment Calculator</h2>
+
+<label>Monthly Rental (RM)</label>
+<input type="number" id="rental">
+
+<label>Tenancy Duration</label>
+<select id="tenancyYears">
+    <option value="1">1 Year</option>
+    <option value="2">2 Years</option>
+</select>
+
+<label>Security Deposit</label>
+<select id="securityMonths">
+    <option value="1">1 Month</option>
+    <option value="2">2 Months</option>
+</select>
+
+<label>Utility Deposit</label>
+<select id="utilityMonths">
+    <option value="0.5">0.5 Month</option>
+    <option value="1">1 Month</option>
+    <option value="1.5">1.5 Months</option>
+</select>
+
+<button onclick="calculateTenancy()">Calculate Tenancy Payment</button>
+
+<div id="tenancyResult" class="result"></div>
+</div>
+
+<hr>
+
+<div class="card">
+<h2>Buyer Eligibility Calculator</h2>
+
+<label>Gross Salary (RM)</label>
+<input type="number" id="salary">
+
+<label>Bank Commitment (RM)</label>
+<input type="number" id="commitment">
+
+<button onclick="calculateEligibility()">Calculate Eligibility</button>
+
+<div id="eligibilityResult" class="result"></div>
+</div>
+
+</div>
+
+<script>
+
+function calculateTenancy()
+{
+    let rental = parseFloat(document.getElementById("rental").value);
+    let tenancyYears = parseInt(document.getElementById("tenancyYears").value);
+    let securityMonths = parseFloat(document.getElementById("securityMonths").value);
+    let utilityMonths = parseFloat(document.getElementById("utilityMonths").value);
+
+    if(isNaN(rental) || rental <= 0)
+    {
+        alert("Please enter a valid rental amount.");
+        return;
+    }
+
+    let tenancyAgreement = 0;
+
+    if(rental >= 1001 && rental <= 1700)
+    {
+        tenancyAgreement = tenancyYears === 1 ? 700 : 800;
+    }
+    else if(rental >= 1701 && rental <= 2500)
+    {
+        tenancyAgreement = tenancyYears === 1 ? 900 : 1100;
+    }
+    else
+    {
+        alert("Rental range not configured.");
+        return;
+    }
+
+    let securityDeposit = rental * securityMonths;
+    let utilityDeposit = rental * utilityMonths;
+    let advanceRental = rental;
+    let sst = rental * 0.08;
+
+    let total =
+        tenancyAgreement +
+        securityDeposit +
+        utilityDeposit +
+        advanceRental +
+        sst;
+
+    document.getElementById("tenancyResult").innerHTML =
+        "<strong>Payment Summary</strong><br><br>" +
+        "Monthly Rental: RM " + rental.toFixed(2) + "<br>" +
+        "Tenancy Agreement + Stamping: RM " + tenancyAgreement.toFixed(2) + "<br>" +
+        "SST (8%): RM " + sst.toFixed(2) + "<br>" +
+        "Security Deposit: RM " + securityDeposit.toFixed(2) + "<br>" +
+        "Utility Deposit: RM " + utilityDeposit.toFixed(2) + "<br>" +
+        "Advance Rental: RM " + advanceRental.toFixed(2) + "<br><br>" +
+        "<strong>Total Payable: RM " + total.toFixed(2) + "</strong>";
+}
+
+function calculateEligibility()
+{
+    let salary = parseFloat(document.getElementById("salary").value);
+    let commitment = parseFloat(document.getElementById("commitment").value);
+
+    if(isNaN(salary) || salary <= 0)
+    {
+        alert("Please enter a valid salary.");
+        return;
+    }
+
+    if(isNaN(commitment))
+    {
+        commitment = 0;
+    }
+
+    let A = salary * 0.60;
+    let B = A - commitment;
+    let C = B * 200;
+
+    document.getElementById("eligibilityResult").innerHTML =
+        "<strong>Buyer Eligibility Result</strong><br><br>" +
+
+        "Gross Salary: RM " + salary.toFixed(2) + "<br>" +
+        "Bank Commitment: RM " + commitment.toFixed(2) + "<br><br>" +
+
+        "<strong>Available Salary = Gross Salary × 60%</strong><br>" +
+        "A = RM " + A.toFixed(2) + "<br><br>" +
+
+        "<strong>Balance Income : B = A − Bank Commitment</strong><br>" +
+        "B = RM " + B.toFixed(2) + "<br><br>" +
+
+        "<strong>Loan Eligibility : C = B × 200</strong><br>" +
+        "C = RM " + C.toFixed(2) + "<br><br>" +
+
+        "<strong>Estimated Loan Eligibility: RM " + C.toFixed(2) + "</strong>";
+}
+
+</script>
+
+</body>
+</html>
