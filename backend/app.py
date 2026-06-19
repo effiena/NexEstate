@@ -267,7 +267,10 @@ def search():
 
 @app.route("/calculator")
 def calculator():
-    return send_from_directory(os.path.join(BASE_DIR, "static"), "della_calculator.html")
+    return send_from_directory(
+        os.path.join(BASE_DIR, "static"),
+        "della_calculator.html"
+    )
 
 # =========================================================
 # RUN
