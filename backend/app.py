@@ -265,6 +265,10 @@ def search():
 
     return jsonify(output)
 
+@app.route("/calculator")
+def calculator():
+    return send_from_directory("static", "della_calculator.html")
+
 # =========================================================
 # RUN
 # =========================================================
